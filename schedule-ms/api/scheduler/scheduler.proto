@@ -1,0 +1,56 @@
+syntax = "proto3";
+option go_package = "./api/scheduler";
+
+message Appointment {
+    string patientID = 1;
+    string doctorID = 2;
+    string apptDateTime = 3;
+}
+
+service Scheduler {
+    rpc Create (CreateAppointment) returns (CreateResponse);
+    rpc Get (GetAppointments) returns (GetResponse);
+    rpc Update (UpdateAppointment) returns (UpdateResponse);
+    rpc Delete (DeleteAppointment) returns (DeleteResponse);
+}
+
+// CREATE
+
+message CreateAppointment {
+    Appointment appointment = 1;
+}
+
+message CreateResponse {
+    string apptID = 1;
+    string message = 2;
+}
+
+// GET
+
+message GetAppointments {}
+
+message GetResponse {
+    repeated Appointment appointments = 1;
+}
+
+// UPDATE
+
+message UpdateAppointment {
+    Appointment appointment = 1;
+}
+
+message UpdateResponse {
+    string apptID = 1;
+    string message = 2;
+}
+
+// DELETE
+
+message DeleteAppointment {
+    string apptID = 1;
+}
+
+message DeleteResponse {
+    string apptID = 1;
+    string message = 2;
+}
