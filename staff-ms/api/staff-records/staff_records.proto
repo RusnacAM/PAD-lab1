@@ -1,0 +1,69 @@
+syntax = "proto3";
+option go_package = "./api/staff-records";
+
+message StaffRecord {
+  string name = 1;
+  string jobTitle = 2;
+  string department = 3;
+  bool isAvailable = 4;
+}
+
+service StaffRecords {
+  rpc Create (CreateStaff) returns (CreateResponse);
+  rpc Get (GetStaffRecords) returns (GetResponse);
+  rpc GetAvailability (GetStaffAvailability) returns (GetAvailabilityResponse);
+  rpc Update (UpdateStaff) returns (UpdateResponse);
+  rpc Delete (DeleteStaff) returns (DeleteResponse);
+}
+
+// CREATE
+
+message CreateStaff {
+  StaffRecord staff = 1;
+}
+
+message CreateResponse {
+  string staffID = 1;
+  string message = 2;
+}
+
+// GET STAFF
+
+message GetStaffRecords {}
+
+message GetResponse {
+  repeated StaffRecord staffRecords = 1;
+}
+
+// GET AVAILABILITY
+
+message GetStaffAvailability {
+  string staffID = 1;
+}
+
+message GetAvailabilityResponse {
+  bool isAvailable = 1;
+}
+
+// UPDATE
+
+message UpdateStaff {
+  string staffID = 1;
+  StaffRecord staffRecord = 2;
+}
+
+message UpdateResponse {
+  string staffID = 1;
+  string message = 2;
+}
+
+// DELETE
+
+message DeleteStaff {
+  string staffID = 1;
+}
+
+message DeleteResponse {
+  string staffID = 1;
+  string message = 2;
+}
