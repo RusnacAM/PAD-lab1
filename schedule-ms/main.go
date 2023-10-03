@@ -3,6 +3,9 @@ package main
 import (
 	"context"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	"google.golang.org/grpc/health/grpc_health_v1"
+	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
 	"schedule-ms/api/scheduler"
@@ -25,6 +28,12 @@ func (m *scheduleServer) Create(ctx context.Context, request *scheduler.CreateAp
 
 func (m *scheduleServer) Get(ctx context.Context, request *scheduler.GetAppointments) (*scheduler.GetResponse, error) {
 	log.Println("Get called")
+
+	//timeout := 5 * time.Second
+	//ctx, _ = context.WithTimeout(context.Background(), timeout)
+	//if error != nil {
+	//	log.Fatalf()
+	//}
 	return &scheduler.GetResponse{Appointments: []*scheduler.Appointment{
 		{DoctorID: "1", PatientID: "1", ApptDateTime: "argarg"},
 		{DoctorID: "2", PatientID: "2", ApptDateTime: "vrbs"},
@@ -43,18 +52,32 @@ func (m *scheduleServer) Delete(ctx context.Context, request *scheduler.DeleteAp
 	return &scheduler.DeleteResponse{ApptID: "1", Message: "Deleted appointment"}, nil
 }
 
+func (m *scheduleServer) Check(ctx context.Context, request *scheduler.HealthCheckRequest) (*scheduler.HealthCheckResponse, error) {
+	status := scheduler.HealthCheckResponse_SERVING
+
+	return &scheduler.HealthCheckResponse{Status: status}, nil
+}
+
 func main() {
 	lis, err := net.Listen(TYPE, HOST+":"+PORT)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	s := grpc.NewServer()
+	grpcServer := grpc.NewServer()
 	apptServer := &scheduleServer{}
-	scheduler.RegisterSchedulerServer(s, apptServer)
+	healthServer := health.NewServer()
 
+	healthServer.SetServingStatus("", grpc_health_v1.HealthCheckResponse_SERVING)
+	healthServer.SetServingStatus(scheduler.Scheduler_ServiceDesc.ServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
+
+	grpc_health_v1.RegisterHealthServer(grpcServer, healthServer)
+	scheduler.RegisterSchedulerServer(grpcServer, apptServer)
+
+	reflection.Register(grpcServer)
 	log.Printf("server listening ar port %v", lis.Addr())
-	if err := s.Serve(lis); err != nil {
+
+	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
 }

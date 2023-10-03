@@ -23,16 +23,20 @@ const (
 	Scheduler_Get_FullMethodName    = "/Scheduler/Get"
 	Scheduler_Update_FullMethodName = "/Scheduler/Update"
 	Scheduler_Delete_FullMethodName = "/Scheduler/Delete"
+	Scheduler_Check_FullMethodName  = "/Scheduler/Check"
 )
 
 // SchedulerClient is the client API for Scheduler service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SchedulerClient interface {
+	// Service Methods
 	Create(ctx context.Context, in *CreateAppointment, opts ...grpc.CallOption) (*CreateResponse, error)
 	Get(ctx context.Context, in *GetAppointments, opts ...grpc.CallOption) (*GetResponse, error)
 	Update(ctx context.Context, in *UpdateAppointment, opts ...grpc.CallOption) (*UpdateResponse, error)
 	Delete(ctx context.Context, in *DeleteAppointment, opts ...grpc.CallOption) (*DeleteResponse, error)
+	// Health Check Methods
+	Check(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error)
 }
 
 type schedulerClient struct {
@@ -79,14 +83,26 @@ func (c *schedulerClient) Delete(ctx context.Context, in *DeleteAppointment, opt
 	return out, nil
 }
 
+func (c *schedulerClient) Check(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error) {
+	out := new(HealthCheckResponse)
+	err := c.cc.Invoke(ctx, Scheduler_Check_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SchedulerServer is the server API for Scheduler service.
 // All implementations must embed UnimplementedSchedulerServer
 // for forward compatibility
 type SchedulerServer interface {
+	// Service Methods
 	Create(context.Context, *CreateAppointment) (*CreateResponse, error)
 	Get(context.Context, *GetAppointments) (*GetResponse, error)
 	Update(context.Context, *UpdateAppointment) (*UpdateResponse, error)
 	Delete(context.Context, *DeleteAppointment) (*DeleteResponse, error)
+	// Health Check Methods
+	Check(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error)
 	mustEmbedUnimplementedSchedulerServer()
 }
 
@@ -105,6 +121,9 @@ func (UnimplementedSchedulerServer) Update(context.Context, *UpdateAppointment) 
 }
 func (UnimplementedSchedulerServer) Delete(context.Context, *DeleteAppointment) (*DeleteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (UnimplementedSchedulerServer) Check(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Check not implemented")
 }
 func (UnimplementedSchedulerServer) mustEmbedUnimplementedSchedulerServer() {}
 
@@ -191,6 +210,24 @@ func _Scheduler_Delete_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Scheduler_Check_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HealthCheckRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SchedulerServer).Check(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Scheduler_Check_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SchedulerServer).Check(ctx, req.(*HealthCheckRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Scheduler_ServiceDesc is the grpc.ServiceDesc for Scheduler service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -213,6 +250,10 @@ var Scheduler_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Delete",
 			Handler:    _Scheduler_Delete_Handler,
+		},
+		{
+			MethodName: "Check",
+			Handler:    _Scheduler_Check_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

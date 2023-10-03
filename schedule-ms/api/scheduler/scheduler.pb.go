@@ -20,6 +20,55 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type HealthCheckResponse_ServingStatus int32
+
+const (
+	HealthCheckResponse_UNKNOWN     HealthCheckResponse_ServingStatus = 0
+	HealthCheckResponse_SERVING     HealthCheckResponse_ServingStatus = 1
+	HealthCheckResponse_NOT_SERVING HealthCheckResponse_ServingStatus = 2
+)
+
+// Enum value maps for HealthCheckResponse_ServingStatus.
+var (
+	HealthCheckResponse_ServingStatus_name = map[int32]string{
+		0: "UNKNOWN",
+		1: "SERVING",
+		2: "NOT_SERVING",
+	}
+	HealthCheckResponse_ServingStatus_value = map[string]int32{
+		"UNKNOWN":     0,
+		"SERVING":     1,
+		"NOT_SERVING": 2,
+	}
+)
+
+func (x HealthCheckResponse_ServingStatus) Enum() *HealthCheckResponse_ServingStatus {
+	p := new(HealthCheckResponse_ServingStatus)
+	*p = x
+	return p
+}
+
+func (x HealthCheckResponse_ServingStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (HealthCheckResponse_ServingStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_api_scheduler_scheduler_proto_enumTypes[0].Descriptor()
+}
+
+func (HealthCheckResponse_ServingStatus) Type() protoreflect.EnumType {
+	return &file_api_scheduler_scheduler_proto_enumTypes[0]
+}
+
+func (x HealthCheckResponse_ServingStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use HealthCheckResponse_ServingStatus.Descriptor instead.
+func (HealthCheckResponse_ServingStatus) EnumDescriptor() ([]byte, []int) {
+	return file_api_scheduler_scheduler_proto_rawDescGZIP(), []int{2, 0}
+}
+
 type Appointment struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -83,6 +132,100 @@ func (x *Appointment) GetApptDateTime() string {
 	return ""
 }
 
+type HealthCheckRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+}
+
+func (x *HealthCheckRequest) Reset() {
+	*x = HealthCheckRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_scheduler_scheduler_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *HealthCheckRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HealthCheckRequest) ProtoMessage() {}
+
+func (x *HealthCheckRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_scheduler_scheduler_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HealthCheckRequest.ProtoReflect.Descriptor instead.
+func (*HealthCheckRequest) Descriptor() ([]byte, []int) {
+	return file_api_scheduler_scheduler_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *HealthCheckRequest) GetService() string {
+	if x != nil {
+		return x.Service
+	}
+	return ""
+}
+
+type HealthCheckResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Status HealthCheckResponse_ServingStatus `protobuf:"varint,1,opt,name=status,proto3,enum=HealthCheckResponse_ServingStatus" json:"status,omitempty"`
+}
+
+func (x *HealthCheckResponse) Reset() {
+	*x = HealthCheckResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_scheduler_scheduler_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *HealthCheckResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HealthCheckResponse) ProtoMessage() {}
+
+func (x *HealthCheckResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_scheduler_scheduler_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HealthCheckResponse.ProtoReflect.Descriptor instead.
+func (*HealthCheckResponse) Descriptor() ([]byte, []int) {
+	return file_api_scheduler_scheduler_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *HealthCheckResponse) GetStatus() HealthCheckResponse_ServingStatus {
+	if x != nil {
+		return x.Status
+	}
+	return HealthCheckResponse_UNKNOWN
+}
+
 type CreateAppointment struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -94,7 +237,7 @@ type CreateAppointment struct {
 func (x *CreateAppointment) Reset() {
 	*x = CreateAppointment{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_scheduler_scheduler_proto_msgTypes[1]
+		mi := &file_api_scheduler_scheduler_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -107,7 +250,7 @@ func (x *CreateAppointment) String() string {
 func (*CreateAppointment) ProtoMessage() {}
 
 func (x *CreateAppointment) ProtoReflect() protoreflect.Message {
-	mi := &file_api_scheduler_scheduler_proto_msgTypes[1]
+	mi := &file_api_scheduler_scheduler_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -120,7 +263,7 @@ func (x *CreateAppointment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateAppointment.ProtoReflect.Descriptor instead.
 func (*CreateAppointment) Descriptor() ([]byte, []int) {
-	return file_api_scheduler_scheduler_proto_rawDescGZIP(), []int{1}
+	return file_api_scheduler_scheduler_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *CreateAppointment) GetAppointment() *Appointment {
@@ -142,7 +285,7 @@ type CreateResponse struct {
 func (x *CreateResponse) Reset() {
 	*x = CreateResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_scheduler_scheduler_proto_msgTypes[2]
+		mi := &file_api_scheduler_scheduler_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -155,7 +298,7 @@ func (x *CreateResponse) String() string {
 func (*CreateResponse) ProtoMessage() {}
 
 func (x *CreateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_scheduler_scheduler_proto_msgTypes[2]
+	mi := &file_api_scheduler_scheduler_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -168,7 +311,7 @@ func (x *CreateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateResponse.ProtoReflect.Descriptor instead.
 func (*CreateResponse) Descriptor() ([]byte, []int) {
-	return file_api_scheduler_scheduler_proto_rawDescGZIP(), []int{2}
+	return file_api_scheduler_scheduler_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *CreateResponse) GetApptID() string {
@@ -194,7 +337,7 @@ type GetAppointments struct {
 func (x *GetAppointments) Reset() {
 	*x = GetAppointments{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_scheduler_scheduler_proto_msgTypes[3]
+		mi := &file_api_scheduler_scheduler_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -207,7 +350,7 @@ func (x *GetAppointments) String() string {
 func (*GetAppointments) ProtoMessage() {}
 
 func (x *GetAppointments) ProtoReflect() protoreflect.Message {
-	mi := &file_api_scheduler_scheduler_proto_msgTypes[3]
+	mi := &file_api_scheduler_scheduler_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -220,7 +363,7 @@ func (x *GetAppointments) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAppointments.ProtoReflect.Descriptor instead.
 func (*GetAppointments) Descriptor() ([]byte, []int) {
-	return file_api_scheduler_scheduler_proto_rawDescGZIP(), []int{3}
+	return file_api_scheduler_scheduler_proto_rawDescGZIP(), []int{5}
 }
 
 type GetResponse struct {
@@ -234,7 +377,7 @@ type GetResponse struct {
 func (x *GetResponse) Reset() {
 	*x = GetResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_scheduler_scheduler_proto_msgTypes[4]
+		mi := &file_api_scheduler_scheduler_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -247,7 +390,7 @@ func (x *GetResponse) String() string {
 func (*GetResponse) ProtoMessage() {}
 
 func (x *GetResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_scheduler_scheduler_proto_msgTypes[4]
+	mi := &file_api_scheduler_scheduler_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -260,7 +403,7 @@ func (x *GetResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetResponse.ProtoReflect.Descriptor instead.
 func (*GetResponse) Descriptor() ([]byte, []int) {
-	return file_api_scheduler_scheduler_proto_rawDescGZIP(), []int{4}
+	return file_api_scheduler_scheduler_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *GetResponse) GetAppointments() []*Appointment {
@@ -281,7 +424,7 @@ type UpdateAppointment struct {
 func (x *UpdateAppointment) Reset() {
 	*x = UpdateAppointment{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_scheduler_scheduler_proto_msgTypes[5]
+		mi := &file_api_scheduler_scheduler_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -294,7 +437,7 @@ func (x *UpdateAppointment) String() string {
 func (*UpdateAppointment) ProtoMessage() {}
 
 func (x *UpdateAppointment) ProtoReflect() protoreflect.Message {
-	mi := &file_api_scheduler_scheduler_proto_msgTypes[5]
+	mi := &file_api_scheduler_scheduler_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -307,7 +450,7 @@ func (x *UpdateAppointment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateAppointment.ProtoReflect.Descriptor instead.
 func (*UpdateAppointment) Descriptor() ([]byte, []int) {
-	return file_api_scheduler_scheduler_proto_rawDescGZIP(), []int{5}
+	return file_api_scheduler_scheduler_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *UpdateAppointment) GetAppointment() *Appointment {
@@ -329,7 +472,7 @@ type UpdateResponse struct {
 func (x *UpdateResponse) Reset() {
 	*x = UpdateResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_scheduler_scheduler_proto_msgTypes[6]
+		mi := &file_api_scheduler_scheduler_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -342,7 +485,7 @@ func (x *UpdateResponse) String() string {
 func (*UpdateResponse) ProtoMessage() {}
 
 func (x *UpdateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_scheduler_scheduler_proto_msgTypes[6]
+	mi := &file_api_scheduler_scheduler_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -355,7 +498,7 @@ func (x *UpdateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateResponse.ProtoReflect.Descriptor instead.
 func (*UpdateResponse) Descriptor() ([]byte, []int) {
-	return file_api_scheduler_scheduler_proto_rawDescGZIP(), []int{6}
+	return file_api_scheduler_scheduler_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *UpdateResponse) GetApptID() string {
@@ -383,7 +526,7 @@ type DeleteAppointment struct {
 func (x *DeleteAppointment) Reset() {
 	*x = DeleteAppointment{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_scheduler_scheduler_proto_msgTypes[7]
+		mi := &file_api_scheduler_scheduler_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -396,7 +539,7 @@ func (x *DeleteAppointment) String() string {
 func (*DeleteAppointment) ProtoMessage() {}
 
 func (x *DeleteAppointment) ProtoReflect() protoreflect.Message {
-	mi := &file_api_scheduler_scheduler_proto_msgTypes[7]
+	mi := &file_api_scheduler_scheduler_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -409,7 +552,7 @@ func (x *DeleteAppointment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteAppointment.ProtoReflect.Descriptor instead.
 func (*DeleteAppointment) Descriptor() ([]byte, []int) {
-	return file_api_scheduler_scheduler_proto_rawDescGZIP(), []int{7}
+	return file_api_scheduler_scheduler_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *DeleteAppointment) GetApptID() string {
@@ -431,7 +574,7 @@ type DeleteResponse struct {
 func (x *DeleteResponse) Reset() {
 	*x = DeleteResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_scheduler_scheduler_proto_msgTypes[8]
+		mi := &file_api_scheduler_scheduler_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -444,7 +587,7 @@ func (x *DeleteResponse) String() string {
 func (*DeleteResponse) ProtoMessage() {}
 
 func (x *DeleteResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_scheduler_scheduler_proto_msgTypes[8]
+	mi := &file_api_scheduler_scheduler_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -457,7 +600,7 @@ func (x *DeleteResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteResponse.ProtoReflect.Descriptor instead.
 func (*DeleteResponse) Descriptor() ([]byte, []int) {
-	return file_api_scheduler_scheduler_proto_rawDescGZIP(), []int{8}
+	return file_api_scheduler_scheduler_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *DeleteResponse) GetApptID() string {
@@ -485,7 +628,19 @@ var file_api_scheduler_scheduler_proto_rawDesc = []byte{
 	0x64, 0x6f, 0x63, 0x74, 0x6f, 0x72, 0x49, 0x44, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08,
 	0x64, 0x6f, 0x63, 0x74, 0x6f, 0x72, 0x49, 0x44, 0x12, 0x22, 0x0a, 0x0c, 0x61, 0x70, 0x70, 0x74,
 	0x44, 0x61, 0x74, 0x65, 0x54, 0x69, 0x6d, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c,
-	0x61, 0x70, 0x70, 0x74, 0x44, 0x61, 0x74, 0x65, 0x54, 0x69, 0x6d, 0x65, 0x22, 0x43, 0x0a, 0x11,
+	0x61, 0x70, 0x70, 0x74, 0x44, 0x61, 0x74, 0x65, 0x54, 0x69, 0x6d, 0x65, 0x22, 0x2e, 0x0a, 0x12,
+	0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x07, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x22, 0x8d, 0x01, 0x0a,
+	0x13, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3a, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0e, 0x32, 0x22, 0x2e, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x43, 0x68, 0x65,
+	0x63, 0x6b, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x2e, 0x53, 0x65, 0x72, 0x76, 0x69,
+	0x6e, 0x67, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73,
+	0x22, 0x3a, 0x0a, 0x0d, 0x53, 0x65, 0x72, 0x76, 0x69, 0x6e, 0x67, 0x53, 0x74, 0x61, 0x74, 0x75,
+	0x73, 0x12, 0x0b, 0x0a, 0x07, 0x55, 0x4e, 0x4b, 0x4e, 0x4f, 0x57, 0x4e, 0x10, 0x00, 0x12, 0x0b,
+	0x0a, 0x07, 0x53, 0x45, 0x52, 0x56, 0x49, 0x4e, 0x47, 0x10, 0x01, 0x12, 0x0f, 0x0a, 0x0b, 0x4e,
+	0x4f, 0x54, 0x5f, 0x53, 0x45, 0x52, 0x56, 0x49, 0x4e, 0x47, 0x10, 0x02, 0x22, 0x43, 0x0a, 0x11,
 	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x41, 0x70, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x6d, 0x65, 0x6e,
 	0x74, 0x12, 0x2e, 0x0a, 0x0b, 0x61, 0x70, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x6d, 0x65, 0x6e, 0x74,
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0c, 0x2e, 0x41, 0x70, 0x70, 0x6f, 0x69, 0x6e, 0x74,
@@ -515,7 +670,7 @@ var file_api_scheduler_scheduler_proto_rawDesc = []byte{
 	0x65, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x70, 0x70, 0x74, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28,
 	0x09, 0x52, 0x06, 0x61, 0x70, 0x70, 0x74, 0x49, 0x44, 0x12, 0x18, 0x0a, 0x07, 0x6d, 0x65, 0x73,
 	0x73, 0x61, 0x67, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6d, 0x65, 0x73, 0x73,
-	0x61, 0x67, 0x65, 0x32, 0xbf, 0x01, 0x0a, 0x09, 0x53, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65,
+	0x61, 0x67, 0x65, 0x32, 0xf3, 0x01, 0x0a, 0x09, 0x53, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65,
 	0x72, 0x12, 0x2d, 0x0a, 0x06, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x12, 0x12, 0x2e, 0x43, 0x72,
 	0x65, 0x61, 0x74, 0x65, 0x41, 0x70, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x6d, 0x65, 0x6e, 0x74, 0x1a,
 	0x0f, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
@@ -527,8 +682,12 @@ var file_api_scheduler_scheduler_proto_rawDesc = []byte{
 	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2d, 0x0a, 0x06, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65,
 	0x12, 0x12, 0x2e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x41, 0x70, 0x70, 0x6f, 0x69, 0x6e, 0x74,
 	0x6d, 0x65, 0x6e, 0x74, 0x1a, 0x0f, 0x2e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x11, 0x5a, 0x0f, 0x2e, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73,
-	0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x32, 0x0a, 0x05, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x12, 0x13,
+	0x2e, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x14, 0x2e, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x43, 0x68, 0x65, 0x63,
+	0x6b, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x11, 0x5a, 0x0f, 0x2e, 0x2f, 0x61,
+	0x70, 0x69, 0x2f, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -543,35 +702,42 @@ func file_api_scheduler_scheduler_proto_rawDescGZIP() []byte {
 	return file_api_scheduler_scheduler_proto_rawDescData
 }
 
-var file_api_scheduler_scheduler_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_api_scheduler_scheduler_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_api_scheduler_scheduler_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_api_scheduler_scheduler_proto_goTypes = []interface{}{
-	(*Appointment)(nil),       // 0: Appointment
-	(*CreateAppointment)(nil), // 1: CreateAppointment
-	(*CreateResponse)(nil),    // 2: CreateResponse
-	(*GetAppointments)(nil),   // 3: GetAppointments
-	(*GetResponse)(nil),       // 4: GetResponse
-	(*UpdateAppointment)(nil), // 5: UpdateAppointment
-	(*UpdateResponse)(nil),    // 6: UpdateResponse
-	(*DeleteAppointment)(nil), // 7: DeleteAppointment
-	(*DeleteResponse)(nil),    // 8: DeleteResponse
+	(HealthCheckResponse_ServingStatus)(0), // 0: HealthCheckResponse.ServingStatus
+	(*Appointment)(nil),                    // 1: Appointment
+	(*HealthCheckRequest)(nil),             // 2: HealthCheckRequest
+	(*HealthCheckResponse)(nil),            // 3: HealthCheckResponse
+	(*CreateAppointment)(nil),              // 4: CreateAppointment
+	(*CreateResponse)(nil),                 // 5: CreateResponse
+	(*GetAppointments)(nil),                // 6: GetAppointments
+	(*GetResponse)(nil),                    // 7: GetResponse
+	(*UpdateAppointment)(nil),              // 8: UpdateAppointment
+	(*UpdateResponse)(nil),                 // 9: UpdateResponse
+	(*DeleteAppointment)(nil),              // 10: DeleteAppointment
+	(*DeleteResponse)(nil),                 // 11: DeleteResponse
 }
 var file_api_scheduler_scheduler_proto_depIdxs = []int32{
-	0, // 0: CreateAppointment.appointment:type_name -> Appointment
-	0, // 1: GetResponse.appointments:type_name -> Appointment
-	0, // 2: UpdateAppointment.appointment:type_name -> Appointment
-	1, // 3: Scheduler.Create:input_type -> CreateAppointment
-	3, // 4: Scheduler.Get:input_type -> GetAppointments
-	5, // 5: Scheduler.Update:input_type -> UpdateAppointment
-	7, // 6: Scheduler.Delete:input_type -> DeleteAppointment
-	2, // 7: Scheduler.Create:output_type -> CreateResponse
-	4, // 8: Scheduler.Get:output_type -> GetResponse
-	6, // 9: Scheduler.Update:output_type -> UpdateResponse
-	8, // 10: Scheduler.Delete:output_type -> DeleteResponse
-	7, // [7:11] is the sub-list for method output_type
-	3, // [3:7] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	0,  // 0: HealthCheckResponse.status:type_name -> HealthCheckResponse.ServingStatus
+	1,  // 1: CreateAppointment.appointment:type_name -> Appointment
+	1,  // 2: GetResponse.appointments:type_name -> Appointment
+	1,  // 3: UpdateAppointment.appointment:type_name -> Appointment
+	4,  // 4: Scheduler.Create:input_type -> CreateAppointment
+	6,  // 5: Scheduler.Get:input_type -> GetAppointments
+	8,  // 6: Scheduler.Update:input_type -> UpdateAppointment
+	10, // 7: Scheduler.Delete:input_type -> DeleteAppointment
+	2,  // 8: Scheduler.Check:input_type -> HealthCheckRequest
+	5,  // 9: Scheduler.Create:output_type -> CreateResponse
+	7,  // 10: Scheduler.Get:output_type -> GetResponse
+	9,  // 11: Scheduler.Update:output_type -> UpdateResponse
+	11, // 12: Scheduler.Delete:output_type -> DeleteResponse
+	3,  // 13: Scheduler.Check:output_type -> HealthCheckResponse
+	9,  // [9:14] is the sub-list for method output_type
+	4,  // [4:9] is the sub-list for method input_type
+	4,  // [4:4] is the sub-list for extension type_name
+	4,  // [4:4] is the sub-list for extension extendee
+	0,  // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_api_scheduler_scheduler_proto_init() }
@@ -593,7 +759,7 @@ func file_api_scheduler_scheduler_proto_init() {
 			}
 		}
 		file_api_scheduler_scheduler_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateAppointment); i {
+			switch v := v.(*HealthCheckRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -605,7 +771,7 @@ func file_api_scheduler_scheduler_proto_init() {
 			}
 		}
 		file_api_scheduler_scheduler_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateResponse); i {
+			switch v := v.(*HealthCheckResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -617,7 +783,7 @@ func file_api_scheduler_scheduler_proto_init() {
 			}
 		}
 		file_api_scheduler_scheduler_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetAppointments); i {
+			switch v := v.(*CreateAppointment); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -629,7 +795,7 @@ func file_api_scheduler_scheduler_proto_init() {
 			}
 		}
 		file_api_scheduler_scheduler_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetResponse); i {
+			switch v := v.(*CreateResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -641,7 +807,7 @@ func file_api_scheduler_scheduler_proto_init() {
 			}
 		}
 		file_api_scheduler_scheduler_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UpdateAppointment); i {
+			switch v := v.(*GetAppointments); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -653,7 +819,7 @@ func file_api_scheduler_scheduler_proto_init() {
 			}
 		}
 		file_api_scheduler_scheduler_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UpdateResponse); i {
+			switch v := v.(*GetResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -665,7 +831,7 @@ func file_api_scheduler_scheduler_proto_init() {
 			}
 		}
 		file_api_scheduler_scheduler_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DeleteAppointment); i {
+			switch v := v.(*UpdateAppointment); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -677,6 +843,30 @@ func file_api_scheduler_scheduler_proto_init() {
 			}
 		}
 		file_api_scheduler_scheduler_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UpdateResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_scheduler_scheduler_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DeleteAppointment); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_scheduler_scheduler_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*DeleteResponse); i {
 			case 0:
 				return &v.state
@@ -694,13 +884,14 @@ func file_api_scheduler_scheduler_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_api_scheduler_scheduler_proto_rawDesc,
-			NumEnums:      0,
-			NumMessages:   9,
+			NumEnums:      1,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_api_scheduler_scheduler_proto_goTypes,
 		DependencyIndexes: file_api_scheduler_scheduler_proto_depIdxs,
+		EnumInfos:         file_api_scheduler_scheduler_proto_enumTypes,
 		MessageInfos:      file_api_scheduler_scheduler_proto_msgTypes,
 	}.Build()
 	File_api_scheduler_scheduler_proto = out.File

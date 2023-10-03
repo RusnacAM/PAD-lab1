@@ -7,11 +7,28 @@ message Appointment {
     string apptDateTime = 3;
 }
 
+message HealthCheckRequest {
+    string service = 1;
+}
+
+message HealthCheckResponse {
+    enum ServingStatus {
+        UNKNOWN = 0;
+        SERVING = 1;
+        NOT_SERVING = 2;
+    }
+    ServingStatus status = 1;
+}
+
 service Scheduler {
+    // Service Methods
     rpc Create (CreateAppointment) returns (CreateResponse);
     rpc Get (GetAppointments) returns (GetResponse);
     rpc Update (UpdateAppointment) returns (UpdateResponse);
     rpc Delete (DeleteAppointment) returns (DeleteResponse);
+
+    // Health Check Methods
+    rpc Check(HealthCheckRequest) returns (HealthCheckResponse);
 }
 
 // CREATE
