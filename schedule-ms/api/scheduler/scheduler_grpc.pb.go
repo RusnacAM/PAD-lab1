@@ -19,11 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Scheduler_Create_FullMethodName = "/Scheduler/Create"
-	Scheduler_Get_FullMethodName    = "/Scheduler/Get"
-	Scheduler_Update_FullMethodName = "/Scheduler/Update"
-	Scheduler_Delete_FullMethodName = "/Scheduler/Delete"
-	Scheduler_Check_FullMethodName  = "/Scheduler/Check"
+	Scheduler_CreateAppt_FullMethodName = "/Scheduler/CreateAppt"
+	Scheduler_GetAppt_FullMethodName    = "/Scheduler/GetAppt"
+	Scheduler_UpdateAppt_FullMethodName = "/Scheduler/UpdateAppt"
+	Scheduler_DeleteAppt_FullMethodName = "/Scheduler/DeleteAppt"
+	Scheduler_Check_FullMethodName      = "/Scheduler/Check"
 )
 
 // SchedulerClient is the client API for Scheduler service.
@@ -31,10 +31,10 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SchedulerClient interface {
 	// Service Methods
-	Create(ctx context.Context, in *CreateAppointment, opts ...grpc.CallOption) (*CreateResponse, error)
-	Get(ctx context.Context, in *GetAppointments, opts ...grpc.CallOption) (*GetResponse, error)
-	Update(ctx context.Context, in *UpdateAppointment, opts ...grpc.CallOption) (*UpdateResponse, error)
-	Delete(ctx context.Context, in *DeleteAppointment, opts ...grpc.CallOption) (*DeleteResponse, error)
+	CreateAppt(ctx context.Context, in *CreateAppointment, opts ...grpc.CallOption) (*CreateResponse, error)
+	GetAppt(ctx context.Context, in *GetAppointments, opts ...grpc.CallOption) (*GetResponse, error)
+	UpdateAppt(ctx context.Context, in *UpdateAppointment, opts ...grpc.CallOption) (*UpdateResponse, error)
+	DeleteAppt(ctx context.Context, in *DeleteAppointment, opts ...grpc.CallOption) (*DeleteResponse, error)
 	// Health Check Methods
 	Check(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error)
 }
@@ -47,36 +47,36 @@ func NewSchedulerClient(cc grpc.ClientConnInterface) SchedulerClient {
 	return &schedulerClient{cc}
 }
 
-func (c *schedulerClient) Create(ctx context.Context, in *CreateAppointment, opts ...grpc.CallOption) (*CreateResponse, error) {
+func (c *schedulerClient) CreateAppt(ctx context.Context, in *CreateAppointment, opts ...grpc.CallOption) (*CreateResponse, error) {
 	out := new(CreateResponse)
-	err := c.cc.Invoke(ctx, Scheduler_Create_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Scheduler_CreateAppt_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *schedulerClient) Get(ctx context.Context, in *GetAppointments, opts ...grpc.CallOption) (*GetResponse, error) {
+func (c *schedulerClient) GetAppt(ctx context.Context, in *GetAppointments, opts ...grpc.CallOption) (*GetResponse, error) {
 	out := new(GetResponse)
-	err := c.cc.Invoke(ctx, Scheduler_Get_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Scheduler_GetAppt_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *schedulerClient) Update(ctx context.Context, in *UpdateAppointment, opts ...grpc.CallOption) (*UpdateResponse, error) {
+func (c *schedulerClient) UpdateAppt(ctx context.Context, in *UpdateAppointment, opts ...grpc.CallOption) (*UpdateResponse, error) {
 	out := new(UpdateResponse)
-	err := c.cc.Invoke(ctx, Scheduler_Update_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Scheduler_UpdateAppt_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *schedulerClient) Delete(ctx context.Context, in *DeleteAppointment, opts ...grpc.CallOption) (*DeleteResponse, error) {
+func (c *schedulerClient) DeleteAppt(ctx context.Context, in *DeleteAppointment, opts ...grpc.CallOption) (*DeleteResponse, error) {
 	out := new(DeleteResponse)
-	err := c.cc.Invoke(ctx, Scheduler_Delete_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Scheduler_DeleteAppt_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -97,10 +97,10 @@ func (c *schedulerClient) Check(ctx context.Context, in *HealthCheckRequest, opt
 // for forward compatibility
 type SchedulerServer interface {
 	// Service Methods
-	Create(context.Context, *CreateAppointment) (*CreateResponse, error)
-	Get(context.Context, *GetAppointments) (*GetResponse, error)
-	Update(context.Context, *UpdateAppointment) (*UpdateResponse, error)
-	Delete(context.Context, *DeleteAppointment) (*DeleteResponse, error)
+	CreateAppt(context.Context, *CreateAppointment) (*CreateResponse, error)
+	GetAppt(context.Context, *GetAppointments) (*GetResponse, error)
+	UpdateAppt(context.Context, *UpdateAppointment) (*UpdateResponse, error)
+	DeleteAppt(context.Context, *DeleteAppointment) (*DeleteResponse, error)
 	// Health Check Methods
 	Check(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error)
 	mustEmbedUnimplementedSchedulerServer()
@@ -110,17 +110,17 @@ type SchedulerServer interface {
 type UnimplementedSchedulerServer struct {
 }
 
-func (UnimplementedSchedulerServer) Create(context.Context, *CreateAppointment) (*CreateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
+func (UnimplementedSchedulerServer) CreateAppt(context.Context, *CreateAppointment) (*CreateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateAppt not implemented")
 }
-func (UnimplementedSchedulerServer) Get(context.Context, *GetAppointments) (*GetResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+func (UnimplementedSchedulerServer) GetAppt(context.Context, *GetAppointments) (*GetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAppt not implemented")
 }
-func (UnimplementedSchedulerServer) Update(context.Context, *UpdateAppointment) (*UpdateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
+func (UnimplementedSchedulerServer) UpdateAppt(context.Context, *UpdateAppointment) (*UpdateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateAppt not implemented")
 }
-func (UnimplementedSchedulerServer) Delete(context.Context, *DeleteAppointment) (*DeleteResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+func (UnimplementedSchedulerServer) DeleteAppt(context.Context, *DeleteAppointment) (*DeleteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteAppt not implemented")
 }
 func (UnimplementedSchedulerServer) Check(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Check not implemented")
@@ -138,74 +138,74 @@ func RegisterSchedulerServer(s grpc.ServiceRegistrar, srv SchedulerServer) {
 	s.RegisterService(&Scheduler_ServiceDesc, srv)
 }
 
-func _Scheduler_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Scheduler_CreateAppt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateAppointment)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SchedulerServer).Create(ctx, in)
+		return srv.(SchedulerServer).CreateAppt(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Scheduler_Create_FullMethodName,
+		FullMethod: Scheduler_CreateAppt_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SchedulerServer).Create(ctx, req.(*CreateAppointment))
+		return srv.(SchedulerServer).CreateAppt(ctx, req.(*CreateAppointment))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Scheduler_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Scheduler_GetAppt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetAppointments)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SchedulerServer).Get(ctx, in)
+		return srv.(SchedulerServer).GetAppt(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Scheduler_Get_FullMethodName,
+		FullMethod: Scheduler_GetAppt_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SchedulerServer).Get(ctx, req.(*GetAppointments))
+		return srv.(SchedulerServer).GetAppt(ctx, req.(*GetAppointments))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Scheduler_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Scheduler_UpdateAppt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateAppointment)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SchedulerServer).Update(ctx, in)
+		return srv.(SchedulerServer).UpdateAppt(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Scheduler_Update_FullMethodName,
+		FullMethod: Scheduler_UpdateAppt_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SchedulerServer).Update(ctx, req.(*UpdateAppointment))
+		return srv.(SchedulerServer).UpdateAppt(ctx, req.(*UpdateAppointment))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Scheduler_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Scheduler_DeleteAppt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteAppointment)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SchedulerServer).Delete(ctx, in)
+		return srv.(SchedulerServer).DeleteAppt(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Scheduler_Delete_FullMethodName,
+		FullMethod: Scheduler_DeleteAppt_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SchedulerServer).Delete(ctx, req.(*DeleteAppointment))
+		return srv.(SchedulerServer).DeleteAppt(ctx, req.(*DeleteAppointment))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -236,20 +236,20 @@ var Scheduler_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*SchedulerServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Create",
-			Handler:    _Scheduler_Create_Handler,
+			MethodName: "CreateAppt",
+			Handler:    _Scheduler_CreateAppt_Handler,
 		},
 		{
-			MethodName: "Get",
-			Handler:    _Scheduler_Get_Handler,
+			MethodName: "GetAppt",
+			Handler:    _Scheduler_GetAppt_Handler,
 		},
 		{
-			MethodName: "Update",
-			Handler:    _Scheduler_Update_Handler,
+			MethodName: "UpdateAppt",
+			Handler:    _Scheduler_UpdateAppt_Handler,
 		},
 		{
-			MethodName: "Delete",
-			Handler:    _Scheduler_Delete_Handler,
+			MethodName: "DeleteAppt",
+			Handler:    _Scheduler_DeleteAppt_Handler,
 		},
 		{
 			MethodName: "Check",

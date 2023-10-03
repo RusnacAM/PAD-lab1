@@ -58,7 +58,7 @@ func main() {
 	staffServer := &staffServer{}
 	staff_records.RegisterStaffRecordsServer(s, staffServer)
 
-	log.Printf("server listening ar port %v", lis.Addr())
+	log.Printf("services listening ar port %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}

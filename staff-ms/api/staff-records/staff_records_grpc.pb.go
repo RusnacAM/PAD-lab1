@@ -90,7 +90,7 @@ func (c *staffRecordsClient) Delete(ctx context.Context, in *DeleteStaff, opts .
 	return out, nil
 }
 
-// StaffRecordsServer is the server API for StaffRecords service.
+// StaffRecordsServer is the services API for StaffRecords service.
 // All implementations must embed UnimplementedStaffRecordsServer
 // for forward compatibility
 type StaffRecordsServer interface {

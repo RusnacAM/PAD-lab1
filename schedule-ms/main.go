@@ -21,35 +21,32 @@ type scheduleServer struct {
 	scheduler.SchedulerServer
 }
 
-func (m *scheduleServer) Create(ctx context.Context, request *scheduler.CreateAppointment) (*scheduler.CreateResponse, error) {
+func (m *scheduleServer) CreateAppt(ctx context.Context, request *scheduler.CreateAppointment) (*scheduler.CreateResponse, error) {
 	log.Println("Create called")
-	return &scheduler.CreateResponse{ApptID: "1", Message: "Appointment created successfully"}, nil
+	return &scheduler.CreateResponse{ApptID: "1", Status: "Appointment created successfully", Error: ""}, nil
 }
 
-func (m *scheduleServer) Get(ctx context.Context, request *scheduler.GetAppointments) (*scheduler.GetResponse, error) {
+func (m *scheduleServer) GetAppt(ctx context.Context, request *scheduler.GetAppointments) (*scheduler.GetResponse, error) {
 	log.Println("Get called")
 
-	//timeout := 5 * time.Second
-	//ctx, _ = context.WithTimeout(context.Background(), timeout)
-	//if error != nil {
-	//	log.Fatalf()
-	//}
 	return &scheduler.GetResponse{Appointments: []*scheduler.Appointment{
-		{DoctorID: "1", PatientID: "1", ApptDateTime: "argarg"},
-		{DoctorID: "2", PatientID: "2", ApptDateTime: "vrbs"},
-		{DoctorID: "3", PatientID: "3", ApptDateTime: "arbstbgarg"},
-		{DoctorID: "4", PatientID: "4", ApptDateTime: "stnt"},
+		{ApptID: "1", DoctorName: "sthsth", PatientName: "srgar", ApptDateTime: "argarg", Appointment: scheduler.Appointment_SURGICAL_INTERVENTION},
+		{ApptID: "2", DoctorName: "sthsth", PatientName: "srgar", ApptDateTime: "argarg", Appointment: scheduler.Appointment_ROUTINE_CHECKUP},
+		{ApptID: "3", DoctorName: "sthsth", PatientName: "srgar", ApptDateTime: "argarg", Appointment: scheduler.Appointment_SURGICAL_INTERVENTION},
+		{ApptID: "4", DoctorName: "sthsth", PatientName: "srgar", ApptDateTime: "argarg", Appointment: scheduler.Appointment_SURGICAL_INTERVENTION},
 	}}, nil
 }
 
-func (m *scheduleServer) Update(ctx context.Context, request *scheduler.UpdateAppointment) (*scheduler.UpdateResponse, error) {
+func (m *scheduleServer) UpdateAppt(ctx context.Context, request *scheduler.UpdateAppointment) (*scheduler.UpdateResponse, error) {
 	log.Println("Update called")
-	return &scheduler.UpdateResponse{ApptID: "1", Message: "Updated successfully"}, nil
+	return &scheduler.UpdateResponse{Appointment: &scheduler.Appointment{
+		ApptID: "1", DoctorName: "sthsth", PatientName: "srgar", ApptDateTime: "argarg", Appointment: scheduler.Appointment_SURGICAL_INTERVENTION,
+	}, Status: "Updated successfully", Error: ""}, nil
 }
 
-func (m *scheduleServer) Delete(ctx context.Context, request *scheduler.DeleteAppointment) (*scheduler.DeleteResponse, error) {
+func (m *scheduleServer) DeleteAppt(ctx context.Context, request *scheduler.DeleteAppointment) (*scheduler.DeleteResponse, error) {
 	log.Println("Delete called")
-	return &scheduler.DeleteResponse{ApptID: "1", Message: "Deleted appointment"}, nil
+	return &scheduler.DeleteResponse{ApptID: "1", Status: "Deleted appointment", Error: ""}, nil
 }
 
 func (m *scheduleServer) Check(ctx context.Context, request *scheduler.HealthCheckRequest) (*scheduler.HealthCheckResponse, error) {
@@ -75,7 +72,7 @@ func main() {
 	scheduler.RegisterSchedulerServer(grpcServer, apptServer)
 
 	reflection.Register(grpcServer)
-	log.Printf("server listening ar port %v", lis.Addr())
+	log.Printf("services listening ar port %v", lis.Addr())
 
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
