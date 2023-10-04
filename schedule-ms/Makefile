@@ -4,5 +4,5 @@ proto:
 build:
 	go build main.go
 
-serv:
+serve:
 	go run main.go
