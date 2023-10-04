@@ -30,18 +30,20 @@ func (m *Server) CreateAppt(_ context.Context, request *scheduler.CreateAppointm
 	log.Println("Create called")
 	var appointment models.Appointment
 
-	appointment.ID = uuid.New().String()
+	appointment.ApptID = uuid.New().String()
 	appointment.PatientName = request.Appointment.PatientName
 	appointment.DoctorName = request.Appointment.DoctorName
 	appointment.ApptDateTime = request.Appointment.ApptDateTime
-	appointment.ApptType = request.Appointment.Appointment.String()
+	appointment.ApptType = request.Appointment.ApptType
+
+	log.Println(appointment.ApptType, request.Appointment.GetApptType())
 
 	if result := m.H.DB.Create(&appointment); result.Error != nil {
 		return &scheduler.CreateResponse{Status: http.StatusConflict, Error: result.Error.Error()}, nil
 	}
 
 	return &scheduler.CreateResponse{
-		ApptID: appointment.ID,
+		ApptID: appointment.ApptID,
 		Status: http.StatusCreated,
 	}, nil
 }
@@ -61,24 +63,24 @@ func (m *Server) UpdateAppt(_ context.Context, request *scheduler.UpdateAppointm
 	log.Println("Update called")
 	var appointment models.Appointment
 	reqAppts := request.GetAppointment()
-	enumVal := request.Appointment.Appointment
 
-	if result := m.H.DB.Model(&appointment).Where("id=?", reqAppts.ApptID).Updates(models.Appointment{
-		ID:           reqAppts.ApptID,
+	if result := m.H.DB.Model(&appointment).Where("appt_id=?", reqAppts.ApptID).Updates(models.Appointment{
+		ApptID:       reqAppts.ApptID,
 		PatientName:  reqAppts.PatientName,
 		DoctorName:   reqAppts.DoctorName,
 		ApptDateTime: reqAppts.ApptDateTime,
-		ApptType:     reqAppts.Appointment.String(),
+		ApptType:     reqAppts.ApptType,
 	}); result.Error != nil {
 		return &scheduler.UpdateResponse{Status: http.StatusConflict, Error: result.Error.Error()}, nil
 	}
 
+	log.Println(appointment)
 	return &scheduler.UpdateResponse{Appointment: &scheduler.Appointment{
-		ApptID:       appointment.ID,
+		ApptID:       appointment.ApptID,
 		DoctorName:   appointment.DoctorName,
 		PatientName:  appointment.PatientName,
 		ApptDateTime: appointment.ApptDateTime,
-		Appointment:  enumVal,
+		ApptType:     appointment.ApptType,
 	}, Status: 0, Error: ""}, nil
 }
 
@@ -87,7 +89,7 @@ func (m *Server) DeleteAppt(_ context.Context, request *scheduler.DeleteAppointm
 	var appointment models.Appointment
 	reqID := request.GetApptID()
 
-	if result := m.H.DB.Where("id=?", reqID).Delete(&appointment); result.Error != nil {
+	if result := m.H.DB.Where("appt_id=?", reqID).Delete(&appointment); result.Error != nil {
 		return &scheduler.DeleteResponse{Status: http.StatusConflict, Error: result.Error.Error()}, nil
 	}
 

@@ -1,7 +1,7 @@
 package models
 
 type Appointment struct {
-	ID           string `gorm:"apptid" gorm:"primarykey"`
+	ApptID       string `gorm:"apptid" gorm:"primarykey"`
 	PatientName  string
 	DoctorName   string
 	ApptDateTime string
