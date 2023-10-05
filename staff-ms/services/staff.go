@@ -2,9 +2,11 @@ package services
 
 import (
 	"context"
+	"github.com/google/uuid"
 	"log"
 	staff_records "staff-ms/api/staff-records"
 	"staff-ms/db"
+	"staff-ms/models"
 )
 
 type Server struct {
@@ -14,32 +16,85 @@ type Server struct {
 
 func (m *Server) Create(ctx context.Context, request *staff_records.CreateStaff) (*staff_records.CreateResponse, error) {
 	log.Println("Create called")
-	return &staff_records.CreateResponse{StaffID: "1", Message: "Appointment created successfully"}, nil
+	var staff models.StaffRecord
+
+	staff.StaffID = uuid.New().String()
+	staff.Name = request.Staff.Name
+	staff.JobTitle = request.Staff.JobTitle
+	staff.Department = request.Staff.Department
+	staff.IsAvailable = request.Staff.IsAvailable
+
+	if result := m.H.DB.Create(&staff); result.Error != nil {
+		return &staff_records.CreateResponse{
+			Message: "New record couldn't be created due to unexpected error",
+			Error:   result.Error.Error(),
+		}, nil
+	}
+
+	return &staff_records.CreateResponse{StaffID: staff.StaffID, Message: "Appointment created successfully"}, nil
 }
 
 func (m *Server) Get(ctx context.Context, request *staff_records.GetStaffRecords) (*staff_records.GetResponse, error) {
 	log.Println("Get called")
-	return &staff_records.GetResponse{StaffRecords: []*staff_records.StaffRecord{
-		{StaffID: "1", Name: "test name", JobTitle: "nurse", Department: "some dept", IsAvailable: true},
-		{StaffID: "2", Name: "some name", JobTitle: "neurologist", Department: "some dept", IsAvailable: false},
-		{StaffID: "3", Name: "first name", JobTitle: "cardiologist", Department: "some dept", IsAvailable: false},
-		{StaffID: "4", Name: "last name", JobTitle: "nurse", Department: "some dept", IsAvailable: true},
-	}}, nil
+	staff := []*staff_records.StaffRecord{}
+
+	if result := m.H.DB.Find(&staff); result.Error != nil {
+		return &staff_records.GetResponse{Error: result.Error.Error()}, nil
+	}
+
+	return &staff_records.GetResponse{StaffRecords: staff}, nil
 }
 
 func (m *Server) GetAvailability(ctx context.Context, request *staff_records.GetStaffAvailability) (*staff_records.GetAvailabilityResponse, error) {
 	log.Println("Get availability called")
-	return &staff_records.GetAvailabilityResponse{IsAvailable: true}, nil
+	var staff models.StaffRecord
+	reqID := request.GetStaffID()
+
+	if result := m.H.DB.Find(&staff, "staff_id=?", reqID); result.Error != nil {
+		return &staff_records.GetAvailabilityResponse{Error: result.Error.Error()}, nil
+	}
+
+	return &staff_records.GetAvailabilityResponse{StaffID: staff.StaffID, IsAvailable: staff.IsAvailable}, nil
 }
 
 func (m *Server) Update(ctx context.Context, request *staff_records.UpdateStaff) (*staff_records.UpdateResponse, error) {
 	log.Println("Update called")
-	return &staff_records.UpdateResponse{StaffID: "1", Message: "Updated successfully"}, nil
+	var staff models.StaffRecord
+	reqStaff := request.GetStaffRecord()
+
+	if result := m.H.DB.Model(&staff).Where("staff_id=?", reqStaff.StaffID).Updates(models.StaffRecord{
+		StaffID:     reqStaff.StaffID,
+		Name:        reqStaff.Name,
+		JobTitle:    reqStaff.JobTitle,
+		Department:  reqStaff.Department,
+		IsAvailable: reqStaff.IsAvailable,
+	}); result.Error != nil {
+		return &staff_records.UpdateResponse{
+			Message: "Staff record could not be updated due to unexpected error",
+			Error:   result.Error.Error(),
+		}, nil
+	}
+
+	log.Println("do you get here")
+
+	return &staff_records.UpdateResponse{
+		StaffID: staff.StaffID,
+		Message: "staff record successfully updated",
+	}, nil
 }
 
 func (m *Server) Delete(ctx context.Context, request *staff_records.DeleteStaff) (*staff_records.DeleteResponse, error) {
 	log.Println("Delete called")
-	return &staff_records.DeleteResponse{StaffID: "1", Message: "Deleted appointment"}, nil
+	var staff models.StaffRecord
+	reqID := request.GetStaffID()
+
+	if result := m.H.DB.Where("staff_id=?", reqID).Delete(&staff); result.Error != nil {
+		return &staff_records.DeleteResponse{Error: result.Error.Error()}, nil
+	}
+	return &staff_records.DeleteResponse{
+		StaffID: reqID,
+		Message: "record successfully deleted",
+	}, nil
 }
 
 func (m *Server) Check(_ context.Context, _ *staff_records.HealthCheckRequest) (*staff_records.HealthCheckResponse, error) {

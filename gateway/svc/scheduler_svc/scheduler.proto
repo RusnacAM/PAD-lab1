@@ -1,6 +1,5 @@
 syntax = "proto3";
 package scheduler;
-option go_package = "./api/scheduler";
 
 message Appointment {
     string apptID = 1;

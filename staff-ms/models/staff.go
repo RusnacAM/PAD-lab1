@@ -1,6 +1,6 @@
 package models
 
-type Staff struct {
+type StaffRecord struct {
 	StaffID     string `gorm:"staffid" gorm:"primarykey"`
 	Name        string
 	JobTitle    string

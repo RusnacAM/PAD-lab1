@@ -25,8 +25,6 @@ func (m *Server) CreateAppt(_ context.Context, request *scheduler.CreateAppointm
 	appointment.ApptDateTime = request.Appointment.ApptDateTime
 	appointment.ApptType = request.Appointment.ApptType
 
-	log.Println(appointment.ApptType, request.Appointment.GetApptType())
-
 	if result := m.H.DB.Create(&appointment); result.Error != nil {
 		return &scheduler.CreateResponse{Status: http.StatusConflict, Error: result.Error.Error()}, nil
 	}

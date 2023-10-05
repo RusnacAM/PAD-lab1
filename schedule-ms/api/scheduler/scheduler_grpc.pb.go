@@ -19,11 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Scheduler_CreateAppt_FullMethodName = "/Scheduler/CreateAppt"
-	Scheduler_GetAppt_FullMethodName    = "/Scheduler/GetAppt"
-	Scheduler_UpdateAppt_FullMethodName = "/Scheduler/UpdateAppt"
-	Scheduler_DeleteAppt_FullMethodName = "/Scheduler/DeleteAppt"
-	Scheduler_Check_FullMethodName      = "/Scheduler/Check"
+	Scheduler_CreateAppt_FullMethodName = "/scheduler.Scheduler/CreateAppt"
+	Scheduler_GetAppt_FullMethodName    = "/scheduler.Scheduler/GetAppt"
+	Scheduler_UpdateAppt_FullMethodName = "/scheduler.Scheduler/UpdateAppt"
+	Scheduler_DeleteAppt_FullMethodName = "/scheduler.Scheduler/DeleteAppt"
+	Scheduler_Check_FullMethodName      = "/scheduler.Scheduler/Check"
 )
 
 // SchedulerClient is the client API for Scheduler service.
@@ -232,7 +232,7 @@ func _Scheduler_Check_Handler(srv interface{}, ctx context.Context, dec func(int
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Scheduler_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "Scheduler",
+	ServiceName: "scheduler.Scheduler",
 	HandlerType: (*SchedulerServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

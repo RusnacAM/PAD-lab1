@@ -26,7 +26,7 @@ func Init() Handler {
 		password,
 	)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	db.AutoMigrate(models.Staff{})
+	db.AutoMigrate(models.StaffRecord{})
 	if err != nil {
 		log.Fatal("Error connecting to the database...", err)
 	}
