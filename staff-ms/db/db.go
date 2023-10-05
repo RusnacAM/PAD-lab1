@@ -5,10 +5,8 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
-	"schedule-ms/models"
+	"staff-ms/models"
 )
-
-//var DB *gorm.DB
 
 type Handler struct {
 	DB *gorm.DB
@@ -17,7 +15,7 @@ type Handler struct {
 func Init() Handler {
 	host := "localhost"
 	port := "5432"
-	dbName := "scheduler_svc"
+	dbName := "staff_svc"
 	dbUser := "postgres"
 	password := "password123"
 	dsn := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable",
@@ -28,11 +26,11 @@ func Init() Handler {
 		password,
 	)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	db.AutoMigrate(models.Appointment{})
+	db.AutoMigrate(models.Staff{})
 	if err != nil {
 		log.Fatal("Error connecting to the database...", err)
 	}
-	fmt.Println("Scheduler database connection successful...")
+	fmt.Println("Staff records database connection successful...")
 
 	return Handler{db}
 }

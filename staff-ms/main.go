@@ -8,6 +8,7 @@ import (
 	"log"
 	"net"
 	staff_records "staff-ms/api/staff-records"
+	"staff-ms/db"
 	services "staff-ms/services"
 )
 
@@ -18,15 +19,16 @@ const (
 )
 
 func main() {
+	h := db.Init()
+
 	lis, err := net.Listen(TYPE, HOST+":"+PORT)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
+	s := &services.Server{H: h}
 
 	grpcServer := grpc.NewServer()
 	healthServer := health.NewServer()
-
-	s := &services.StaffServer{}
 
 	healthServer.SetServingStatus("", grpc_health_v1.HealthCheckResponse_SERVING)
 	healthServer.SetServingStatus(staff_records.StaffRecords_ServiceDesc.ServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
