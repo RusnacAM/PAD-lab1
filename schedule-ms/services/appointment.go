@@ -52,7 +52,6 @@ func (m *Server) UpdateAppt(_ context.Context, request *scheduler.UpdateAppointm
 	reqAppts := request.GetAppointment()
 
 	if result := m.H.DB.Model(&appointment).Where("appt_id=?", reqAppts.ApptID).Updates(models.Appointment{
-		ApptID:       reqAppts.ApptID,
 		PatientName:  reqAppts.PatientName,
 		DoctorName:   reqAppts.DoctorName,
 		ApptDateTime: reqAppts.ApptDateTime,
