@@ -24,17 +24,21 @@ const (
 	StaffRecords_GetAvailability_FullMethodName = "/StaffRecords/GetAvailability"
 	StaffRecords_Update_FullMethodName          = "/StaffRecords/Update"
 	StaffRecords_Delete_FullMethodName          = "/StaffRecords/Delete"
+	StaffRecords_Check_FullMethodName           = "/StaffRecords/Check"
 )
 
 // StaffRecordsClient is the client API for StaffRecords service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type StaffRecordsClient interface {
+	// Service Methods
 	Create(ctx context.Context, in *CreateStaff, opts ...grpc.CallOption) (*CreateResponse, error)
 	Get(ctx context.Context, in *GetStaffRecords, opts ...grpc.CallOption) (*GetResponse, error)
 	GetAvailability(ctx context.Context, in *GetStaffAvailability, opts ...grpc.CallOption) (*GetAvailabilityResponse, error)
 	Update(ctx context.Context, in *UpdateStaff, opts ...grpc.CallOption) (*UpdateResponse, error)
 	Delete(ctx context.Context, in *DeleteStaff, opts ...grpc.CallOption) (*DeleteResponse, error)
+	// Health Check Methods
+	Check(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error)
 }
 
 type staffRecordsClient struct {
@@ -90,15 +94,27 @@ func (c *staffRecordsClient) Delete(ctx context.Context, in *DeleteStaff, opts .
 	return out, nil
 }
 
-// StaffRecordsServer is the services API for StaffRecords service.
+func (c *staffRecordsClient) Check(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error) {
+	out := new(HealthCheckResponse)
+	err := c.cc.Invoke(ctx, StaffRecords_Check_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// StaffRecordsServer is the server API for StaffRecords service.
 // All implementations must embed UnimplementedStaffRecordsServer
 // for forward compatibility
 type StaffRecordsServer interface {
+	// Service Methods
 	Create(context.Context, *CreateStaff) (*CreateResponse, error)
 	Get(context.Context, *GetStaffRecords) (*GetResponse, error)
 	GetAvailability(context.Context, *GetStaffAvailability) (*GetAvailabilityResponse, error)
 	Update(context.Context, *UpdateStaff) (*UpdateResponse, error)
 	Delete(context.Context, *DeleteStaff) (*DeleteResponse, error)
+	// Health Check Methods
+	Check(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error)
 	mustEmbedUnimplementedStaffRecordsServer()
 }
 
@@ -120,6 +136,9 @@ func (UnimplementedStaffRecordsServer) Update(context.Context, *UpdateStaff) (*U
 }
 func (UnimplementedStaffRecordsServer) Delete(context.Context, *DeleteStaff) (*DeleteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (UnimplementedStaffRecordsServer) Check(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Check not implemented")
 }
 func (UnimplementedStaffRecordsServer) mustEmbedUnimplementedStaffRecordsServer() {}
 
@@ -224,6 +243,24 @@ func _StaffRecords_Delete_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _StaffRecords_Check_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HealthCheckRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StaffRecordsServer).Check(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StaffRecords_Check_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StaffRecordsServer).Check(ctx, req.(*HealthCheckRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // StaffRecords_ServiceDesc is the grpc.ServiceDesc for StaffRecords service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -250,6 +287,10 @@ var StaffRecords_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Delete",
 			Handler:    _StaffRecords_Delete_Handler,
+		},
+		{
+			MethodName: "Check",
+			Handler:    _StaffRecords_Check_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

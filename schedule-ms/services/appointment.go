@@ -63,7 +63,6 @@ func (m *Server) UpdateAppt(_ context.Context, request *scheduler.UpdateAppointm
 		return &scheduler.UpdateResponse{Status: http.StatusConflict, Error: result.Error.Error()}, nil
 	}
 
-	log.Println(appointment)
 	return &scheduler.UpdateResponse{Appointment: &scheduler.Appointment{
 		ApptID:       appointment.ApptID,
 		DoctorName:   appointment.DoctorName,

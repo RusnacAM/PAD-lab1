@@ -2,18 +2,23 @@ syntax = "proto3";
 option go_package = "./api/staff-records";
 
 message StaffRecord {
-  string name = 1;
-  string jobTitle = 2;
-  string department = 3;
-  bool isAvailable = 4;
+  string staffID = 1;
+  string name = 2;
+  string jobTitle = 3;
+  string department = 4;
+  bool isAvailable = 5;
 }
 
 service StaffRecords {
+  // Service Methods
   rpc Create (CreateStaff) returns (CreateResponse);
   rpc Get (GetStaffRecords) returns (GetResponse);
   rpc GetAvailability (GetStaffAvailability) returns (GetAvailabilityResponse);
   rpc Update (UpdateStaff) returns (UpdateResponse);
   rpc Delete (DeleteStaff) returns (DeleteResponse);
+
+  // Health Check Methods
+  rpc Check(HealthCheckRequest) returns (HealthCheckResponse);
 }
 
 // CREATE
@@ -25,6 +30,7 @@ message CreateStaff {
 message CreateResponse {
   string staffID = 1;
   string message = 2;
+  string error = 3;
 }
 
 // GET STAFF
@@ -33,6 +39,7 @@ message GetStaffRecords {}
 
 message GetResponse {
   repeated StaffRecord staffRecords = 1;
+  string error = 2;
 }
 
 // GET AVAILABILITY
@@ -42,19 +49,21 @@ message GetStaffAvailability {
 }
 
 message GetAvailabilityResponse {
-  bool isAvailable = 1;
+  string staffID = 1;
+  bool isAvailable = 2;
+  string error = 3;
 }
 
 // UPDATE
 
 message UpdateStaff {
-  string staffID = 1;
-  StaffRecord staffRecord = 2;
+  StaffRecord staffRecord = 1;
 }
 
 message UpdateResponse {
   string staffID = 1;
   string message = 2;
+  string error = 3;
 }
 
 // DELETE
@@ -66,4 +75,20 @@ message DeleteStaff {
 message DeleteResponse {
   string staffID = 1;
   string message = 2;
+  string error = 3;
+}
+
+// HEALTH
+
+message HealthCheckRequest {
+  string service = 1;
+}
+
+message HealthCheckResponse {
+  enum ServingStatus {
+    UNKNOWN = 0;
+    SERVING = 1;
+    NOT_SERVING = 2;
+  }
+  ServingStatus status = 1;
 }
