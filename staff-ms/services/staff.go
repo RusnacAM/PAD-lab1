@@ -61,8 +61,9 @@ func (m *Server) Update(ctx context.Context, request *staff_records.UpdateStaff)
 	log.Println("Update called")
 	var staff models.StaffRecord
 	reqStaff := request.GetStaffRecord()
+	log.Println(reqStaff.IsAvailable)
 
-	if result := m.H.DB.Model(&staff).Where("staff_id=?", reqStaff.StaffID).Updates(models.StaffRecord{
+	if result := m.H.DB.Model(&staff).Where("staff_id=?", reqStaff.StaffID).Select("*").Updates(models.StaffRecord{
 		StaffID:     reqStaff.StaffID,
 		Name:        reqStaff.Name,
 		JobTitle:    reqStaff.JobTitle,
@@ -75,8 +76,7 @@ func (m *Server) Update(ctx context.Context, request *staff_records.UpdateStaff)
 		}, nil
 	}
 
-	log.Println("do you get here")
-
+	log.Println(staff.IsAvailable)
 	return &staff_records.UpdateResponse{
 		StaffID: staff.StaffID,
 		Message: "staff record successfully updated",

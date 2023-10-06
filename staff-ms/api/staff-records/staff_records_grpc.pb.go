@@ -19,12 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	StaffRecords_Create_FullMethodName          = "/StaffRecords/Create"
-	StaffRecords_Get_FullMethodName             = "/StaffRecords/Get"
-	StaffRecords_GetAvailability_FullMethodName = "/StaffRecords/GetAvailability"
-	StaffRecords_Update_FullMethodName          = "/StaffRecords/Update"
-	StaffRecords_Delete_FullMethodName          = "/StaffRecords/Delete"
-	StaffRecords_Check_FullMethodName           = "/StaffRecords/Check"
+	StaffRecords_Create_FullMethodName          = "/StaffRecords.StaffRecords/Create"
+	StaffRecords_Get_FullMethodName             = "/StaffRecords.StaffRecords/Get"
+	StaffRecords_GetAvailability_FullMethodName = "/StaffRecords.StaffRecords/GetAvailability"
+	StaffRecords_Update_FullMethodName          = "/StaffRecords.StaffRecords/Update"
+	StaffRecords_Delete_FullMethodName          = "/StaffRecords.StaffRecords/Delete"
+	StaffRecords_Check_FullMethodName           = "/StaffRecords.StaffRecords/Check"
 )
 
 // StaffRecordsClient is the client API for StaffRecords service.
@@ -265,7 +265,7 @@ func _StaffRecords_Check_Handler(srv interface{}, ctx context.Context, dec func(
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var StaffRecords_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "StaffRecords",
+	ServiceName: "StaffRecords.StaffRecords",
 	HandlerType: (*StaffRecordsServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
