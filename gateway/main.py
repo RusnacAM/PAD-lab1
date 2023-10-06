@@ -1,5 +1,7 @@
 import logging
 import grpc
+import requests
+import json
 from flask import Flask, request, jsonify
 from scheduler_svc import scheduler_pb2
 from scheduler_svc import scheduler_pb2_grpc
@@ -9,21 +11,49 @@ from google.protobuf.json_format import MessageToDict
 
 app = Flask(__name__)
 
+serv_discovery = "http://localhost:5051/route"
 scheduler_stub = ""
 staff_stub = ""
+svc_stub = {}
 
 def init():
-    scheduler_channel = grpc.insecure_channel('localhost:3030')
-    staff_channel = grpc.insecure_channel('localhost:8080')
-    global scheduler_stub 
-    global staff_stub
-    scheduler_stub = scheduler_pb2_grpc.SchedulerStub(scheduler_channel)
-    staff_stub = staff_records_pb2_grpc.StaffRecordsStub(staff_channel)
+    global svc_stub
+    try:
+        response = requests.get(serv_discovery, timeout=0.5)
+    except requests.exceptions.Timeout:
+        response = "service discovery timed out"
+        return response
+    services = response.json()
+    for service in services:
+        print(service)
+        channel = grpc.insecure_channel(services[service])
+        if service == "scheduler_svc":
+            svc_stub[service] = scheduler_pb2_grpc.SchedulerStub(channel)
+        elif service == "staff_svc":
+            svc_stub[service] = staff_records_pb2_grpc.StaffRecordsStub(channel)
+
+# @app.route("/", methods=['GET'])
+# def test():
+#     global svc_stub
+#     try:
+#         response = requests.get(serv_discovery, timeout=0.5)
+#     except requests.exceptions.Timeout:
+#         response = "service discovery timed out"
+#         return response
+#     services = response.json()
+#     for service in services:
+#         print(service)
+#         channel = grpc.insecure_channel(services[service])
+#         if service == "scheduler_svc":
+#             svc_stub[service] = scheduler_pb2_grpc.SchedulerStub(channel)
+#         elif service == "staff_svc":
+#             svc_stub[service] = staff_records_pb2_grpc.StaffRecordsStub(channel)
+#     return "arbvr"
 
 @app.route("/appointment", methods=['GET'])
 def get_appointments():
     try:
-        response = scheduler_stub.GetAppt(scheduler_pb2.GetAppointments(), timeout=0.5)
+        response = svc_stub["scheduler_svc"].GetAppt(scheduler_pb2.GetAppointments(), timeout=0.5)
     except grpc.RpcError as e:
         response = jsonify({'message': 'get appointments timed out'})
         return response, 408
@@ -34,7 +64,7 @@ def create_appointment():
     data = request.get_json()
     appt_data = data["appointment"]
     try:
-        response = scheduler_stub.CreateAppt(scheduler_pb2.CreateAppointment(appointment={
+        response = svc_stub["scheduler_svc"].CreateAppt(scheduler_pb2.CreateAppointment(appointment={
             "patientName": appt_data["patientName"],
             "doctorName": appt_data["doctorName"],
             "apptDateTime": appt_data["apptDateTime"],
@@ -50,7 +80,7 @@ def update_appointment():
     data = request.get_json()
     appt_data = data["appointment"]
     try:
-        response = scheduler_stub.UpdateAppt(scheduler_pb2.UpdateAppointment(appointment={
+        response = svc_stub["scheduler_svc"].UpdateAppt(scheduler_pb2.UpdateAppointment(appointment={
             "apptID": appt_data["apptID"],
             "patientName": appt_data["patientName"],
             "doctorName": appt_data["doctorName"],
@@ -67,7 +97,7 @@ def delete_appointment():
     data = request.get_json()
     req_id = data["apptID"]
     try:
-        response = scheduler_stub.DeleteAppt(scheduler_pb2.DeleteAppointment(apptID=req_id), timeout=0.5)
+        response = svc_stub["scheduler_svc"].DeleteAppt(scheduler_pb2.DeleteAppointment(apptID=req_id), timeout=0.5)
     except grpc.RpcError as e:
         response = jsonify({'message': 'delete appointment timed out'})
         return response, 408
@@ -88,7 +118,7 @@ def get_staff_availability():
     data = request.get_json()
     req_id = data["staffID"]
     try:
-        response = staff_stub.GetAvailability(staff_records_pb2.GetStaffAvailability(staffID=req_id), timeout=0.5)
+        response = svc_stub["staff_svc"].GetAvailability(staff_records_pb2.GetStaffAvailability(staffID=req_id), timeout=0.5)
     except grpc.RpcError as e:
         response = jsonify({'message': 'get staff availability timed out'})
         return response, 408
@@ -99,7 +129,7 @@ def create_staff():
     data = request.get_json()
     staff_data = data["staffRecord"]
     try:
-        response = staff_stub.Create(staff_records_pb2.CreateStaff(staff={
+        response = svc_stub["staff_svc"].Create(staff_records_pb2.CreateStaff(staff={
             "name": staff_data["name"],
             "jobTitle": staff_data["jobTitle"],
             "department": staff_data["department"],
@@ -117,7 +147,7 @@ def update_staff():
     print(staff_data["isAvailable"])
     print(type(staff_data["isAvailable"]))
     try:
-        response = staff_stub.Update(staff_records_pb2.UpdateStaff(staffRecord={
+        response = svc_stub["staff_svc"].Update(staff_records_pb2.UpdateStaff(staffRecord={
             "staffID": staff_data["staffID"],
             "name": staff_data["name"],
             "jobTitle": staff_data["jobTitle"],
@@ -134,7 +164,7 @@ def delete_staff():
     data = request.get_json()
     req_id = data["staffID"]
     try:
-        response = staff_stub.Delete(staff_records_pb2.DeleteStaff(staffID=req_id), timeout=0.5)
+        response = svc_stub["staff_svc"].Delete(staff_records_pb2.DeleteStaff(staffID=req_id), timeout=0.5)
     except grpc.RpcError as e:
         response = jsonify({'message': 'delete staff timed out'})
         return response, 408
