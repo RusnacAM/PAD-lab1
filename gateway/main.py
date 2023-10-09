@@ -1,20 +1,36 @@
 import logging
 import grpc
 import requests
-import json
 from flask import Flask, request, jsonify
+from functools import wraps
+from threading import Lock
 from scheduler_svc import scheduler_pb2
 from scheduler_svc import scheduler_pb2_grpc
 from staff_svc import staff_records_pb2
 from staff_svc import staff_records_pb2_grpc
 from google.protobuf.json_format import MessageToDict
+from expiringdict import ExpiringDict
 
 app = Flask(__name__)
 
 serv_discovery = "http://localhost:5051/route"
-scheduler_stub = ""
-staff_stub = ""
+cache = ExpiringDict(max_len=100, max_age_seconds=10)
+lock = Lock()
 svc_stub = {}
+
+def cache_req(f):
+    @wraps(f)
+    def cache_wrapper(*args):
+        key = str(f)
+        with lock:
+            global cache
+            result = cache.get(key)
+            if result is None:
+                result = f()
+                cache[key] = result
+            return result
+    return cache_wrapper
+
 
 def init():
     global svc_stub
@@ -25,34 +41,18 @@ def init():
         return response
     services = response.json()
     for service in services:
-        print(service)
         channel = grpc.insecure_channel(services[service])
         if service == "scheduler_svc":
             svc_stub[service] = scheduler_pb2_grpc.SchedulerStub(channel)
         elif service == "staff_svc":
             svc_stub[service] = staff_records_pb2_grpc.StaffRecordsStub(channel)
 
-# @app.route("/", methods=['GET'])
-# def test():
-#     global svc_stub
-#     try:
-#         response = requests.get(serv_discovery, timeout=0.5)
-#     except requests.exceptions.Timeout:
-#         response = "service discovery timed out"
-#         return response
-#     services = response.json()
-#     for service in services:
-#         print(service)
-#         channel = grpc.insecure_channel(services[service])
-#         if service == "scheduler_svc":
-#             svc_stub[service] = scheduler_pb2_grpc.SchedulerStub(channel)
-#         elif service == "staff_svc":
-#             svc_stub[service] = staff_records_pb2_grpc.StaffRecordsStub(channel)
-#     return "arbvr"
 
 @app.route("/appointment", methods=['GET'])
+@cache_req
 def get_appointments():
     try:
+        # print(request.endpoint)
         response = svc_stub["scheduler_svc"].GetAppt(scheduler_pb2.GetAppointments(), timeout=0.5)
     except grpc.RpcError as e:
         response = jsonify({'message': 'get appointments timed out'})
@@ -104,13 +104,13 @@ def delete_appointment():
     return MessageToDict(response)
 
 @app.route("/staff", methods=['GET'])
+@cache_req
 def get_staff():
     try:
-        response = staff_stub.Get(staff_records_pb2.GetStaffRecords(), timeout=0.5)
+        response = svc_stub["staff_svc"].Get(staff_records_pb2.GetStaffRecords(), timeout=0.5)
     except grpc.RpcError as e:
         response = jsonify({'message': 'get staff timed out'})
         return response, 408
-    print(response)
     return MessageToDict(response)
 
 @app.route("/staff/availability", methods=['GET'])
@@ -169,6 +169,12 @@ def delete_staff():
         response = jsonify({'message': 'delete staff timed out'})
         return response, 408
     return MessageToDict(response)
+
+@app.route("/health", methods=['GET'])
+def get_health():
+    resp = jsonify(status="SERVING")
+    resp.status_code = 200
+    return resp
 
 
 if __name__ == "__main__":

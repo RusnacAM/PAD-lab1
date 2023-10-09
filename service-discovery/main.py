@@ -23,6 +23,12 @@ def get_routes():
         return jsonify({'message': 'No services registered'}), 209
     else:
         return jsonify(routes), 200
+    
+@app.route("/health", methods=['GET'])
+def get_health():
+    resp = jsonify(status="SERVING")
+    resp.status_code = 200
+    return resp
 
 if __name__ == "__main__":
     logging.basicConfig()
