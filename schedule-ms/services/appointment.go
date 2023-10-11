@@ -44,19 +44,19 @@ func (m *Server) CreateAppt(_ context.Context, request *scheduler.CreateAppointm
 
 	appointment.ApptID = uuid.New().String()
 	appointment.PatientName = request.Appointment.PatientName
-	appointment.DoctorName = request.Appointment.DoctorName
+	appointment.StaffID = request.Appointment.StaffID
 	appointment.ApptDateTime = request.Appointment.ApptDateTime
 	appointment.ApptType = request.Appointment.ApptType
 
-	availability := getAvailability("d93c478d-085b-40fc-bf62-97028e5c3d9a")
+	availability := getAvailability(appointment.StaffID)
 
 	if !availability {
 		return &scheduler.CreateResponse{Status: http.StatusConflict, Error: "the doctor you requested is not available, choose another."}, nil
 	}
 
-	//if result := m.H.DB.Create(&appointment); result.Error != nil {
-	//	return &scheduler.CreateResponse{Status: http.StatusConflict, Error: result.Error.Error()}, nil
-	//}
+	if result := m.H.DB.Create(&appointment); result.Error != nil {
+		return &scheduler.CreateResponse{Status: http.StatusConflict, Error: result.Error.Error()}, nil
+	}
 
 	return &scheduler.CreateResponse{
 		ApptID: appointment.ApptID,
@@ -80,9 +80,15 @@ func (m *Server) UpdateAppt(_ context.Context, request *scheduler.UpdateAppointm
 	var appointment models.Appointment
 	reqAppts := request.GetAppointment()
 
+	availability := getAvailability(appointment.StaffID)
+
+	if !availability {
+		return &scheduler.UpdateResponse{Status: http.StatusConflict, Error: "the doctor you requested is not available, choose another."}, nil
+	}
+
 	if result := m.H.DB.Model(&appointment).Where("appt_id=?", reqAppts.ApptID).Updates(models.Appointment{
 		PatientName:  reqAppts.PatientName,
-		DoctorName:   reqAppts.DoctorName,
+		StaffID:      reqAppts.StaffID,
 		ApptDateTime: reqAppts.ApptDateTime,
 		ApptType:     reqAppts.ApptType,
 	}); result.Error != nil {
@@ -91,7 +97,7 @@ func (m *Server) UpdateAppt(_ context.Context, request *scheduler.UpdateAppointm
 
 	return &scheduler.UpdateResponse{Appointment: &scheduler.Appointment{
 		ApptID:       appointment.ApptID,
-		DoctorName:   appointment.DoctorName,
+		StaffID:      appointment.StaffID,
 		PatientName:  appointment.PatientName,
 		ApptDateTime: appointment.ApptDateTime,
 		ApptType:     appointment.ApptType,

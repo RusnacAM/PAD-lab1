@@ -2,10 +2,11 @@ syntax = "proto3";
 package scheduler;
 option go_package = "./api/scheduler";
 
+
 message Appointment {
     string apptID = 1;
     string patientName = 2;
-    string doctorName = 3;
+    string staffID = 3;
     string apptDateTime = 4;
     string apptType = 5;
 }
