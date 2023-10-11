@@ -80,7 +80,7 @@ func (m *Server) UpdateAppt(_ context.Context, request *scheduler.UpdateAppointm
 	var appointment models.Appointment
 	reqAppts := request.GetAppointment()
 
-	availability := getAvailability(appointment.StaffID)
+	availability := getAvailability(reqAppts.StaffID)
 
 	if !availability {
 		return &scheduler.UpdateResponse{Status: http.StatusConflict, Error: "the doctor you requested is not available, choose another."}, nil
