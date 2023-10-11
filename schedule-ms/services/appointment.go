@@ -3,16 +3,39 @@ package services
 import (
 	"context"
 	"github.com/google/uuid"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"log"
 	"net/http"
 	"schedule-ms/api/scheduler"
+	"schedule-ms/api/staff"
 	"schedule-ms/db"
 	"schedule-ms/models"
+	"time"
 )
 
 type Server struct {
 	H db.Handler
 	scheduler.SchedulerServer
+}
+
+func getAvailability(staffID string) bool {
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+
+	conn, err := grpc.Dial("localhost:8080", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		panic(err)
+	}
+	defer conn.Close()
+
+	client := staff_records.NewStaffRecordsClient(conn)
+
+	resp, err := client.GetAvailability(ctx, &staff_records.GetStaffAvailability{StaffID: staffID})
+	if err != nil {
+		panic(err)
+	}
+
+	return resp.GetIsAvailable()
 }
 
 func (m *Server) CreateAppt(_ context.Context, request *scheduler.CreateAppointment) (*scheduler.CreateResponse, error) {
@@ -25,9 +48,15 @@ func (m *Server) CreateAppt(_ context.Context, request *scheduler.CreateAppointm
 	appointment.ApptDateTime = request.Appointment.ApptDateTime
 	appointment.ApptType = request.Appointment.ApptType
 
-	if result := m.H.DB.Create(&appointment); result.Error != nil {
-		return &scheduler.CreateResponse{Status: http.StatusConflict, Error: result.Error.Error()}, nil
+	availability := getAvailability("d93c478d-085b-40fc-bf62-97028e5c3d9a")
+
+	if !availability {
+		return &scheduler.CreateResponse{Status: http.StatusConflict, Error: "the doctor you requested is not available, choose another."}, nil
 	}
+
+	//if result := m.H.DB.Create(&appointment); result.Error != nil {
+	//	return &scheduler.CreateResponse{Status: http.StatusConflict, Error: result.Error.Error()}, nil
+	//}
 
 	return &scheduler.CreateResponse{
 		ApptID: appointment.ApptID,

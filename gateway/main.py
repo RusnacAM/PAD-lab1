@@ -52,7 +52,6 @@ def init():
 @cache_req
 def get_appointments():
     try:
-        # print(request.endpoint)
         response = svc_stub["scheduler_svc"].GetAppt(scheduler_pb2.GetAppointments(), timeout=0.5)
     except grpc.RpcError as e:
         response = jsonify({'message': 'get appointments timed out'})
