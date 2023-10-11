@@ -8,6 +8,8 @@ from scheduler_svc import scheduler_pb2
 from scheduler_svc import scheduler_pb2_grpc
 from staff_svc import staff_records_pb2
 from staff_svc import staff_records_pb2_grpc
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from google.protobuf.json_format import MessageToDict
 from expiringdict import ExpiringDict
 
@@ -15,6 +17,12 @@ app = Flask(__name__)
 
 serv_discovery = "http://localhost:5051/route"
 cache = ExpiringDict(max_len=100, max_age_seconds=10)
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["5/second", "100 per hour", "250 per day"]
+
+)
 lock = Lock()
 svc_stub = {}
 
@@ -49,6 +57,7 @@ def init():
 
 
 @app.route("/appointment", methods=['GET'])
+@limiter.limit("10 per minute", override_defaults=False)
 @cache_req
 def get_appointments():
     try:
@@ -59,6 +68,7 @@ def get_appointments():
     return MessageToDict(response)
 
 @app.route("/appointment", methods=['POST'])
+@limiter.limit("10 per minute", override_defaults=False)
 def create_appointment():
     data = request.get_json()
     appt_data = data["appointment"]
@@ -75,6 +85,7 @@ def create_appointment():
     return MessageToDict(response)
 
 @app.route("/appointment", methods=['PUT'])
+@limiter.limit("10 per minute", override_defaults=False)
 def update_appointment():
     data = request.get_json()
     appt_data = data["appointment"]
@@ -92,6 +103,7 @@ def update_appointment():
     return MessageToDict(response)
 
 @app.route("/appointment", methods=['DELETE'])
+@limiter.limit("10 per minute", override_defaults=False)
 def delete_appointment():
     data = request.get_json()
     req_id = data["apptID"]
@@ -103,6 +115,7 @@ def delete_appointment():
     return MessageToDict(response)
 
 @app.route("/staff", methods=['GET'])
+@limiter.limit("10 per minute", override_defaults=False)
 @cache_req
 def get_staff():
     try:
@@ -113,6 +126,7 @@ def get_staff():
     return MessageToDict(response)
 
 @app.route("/staff/availability", methods=['GET'])
+@limiter.limit("10 per minute", override_defaults=False)
 def get_staff_availability():
     data = request.get_json()
     req_id = data["staffID"]
@@ -124,6 +138,7 @@ def get_staff_availability():
     return MessageToDict(response)
 
 @app.route("/staff", methods=['POST'])
+@limiter.limit("10 per minute", override_defaults=False)
 def create_staff():
     data = request.get_json()
     staff_data = data["staffRecord"]
@@ -140,6 +155,7 @@ def create_staff():
     return MessageToDict(response)
 
 @app.route("/staff", methods=['PUT'])
+@limiter.limit("10 per minute", override_defaults=False)
 def update_staff():
     data = request.get_json()
     staff_data = data["staffRecord"]
@@ -159,6 +175,7 @@ def update_staff():
     return MessageToDict(response)
 
 @app.route("/staff", methods=['DELETE'])
+@limiter.limit("10 per minute", override_defaults=False)
 def delete_staff():
     data = request.get_json()
     req_id = data["staffID"]
@@ -175,6 +192,9 @@ def get_health():
     resp.status_code = 200
     return resp
 
+@app.errorhandler(429)
+def ratelimit_handler(e):
+  return "Too many requests. You have exceeded your rate-limit."
 
 if __name__ == "__main__":
     logging.basicConfig()
