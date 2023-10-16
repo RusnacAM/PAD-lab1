@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	HOST = "localhost"
+	HOST = "schedule-ms"
 	PORT = "3030"
 	TYPE = "tcp"
 )
@@ -49,7 +49,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	registerSelf()
+	//registerSelf()
 	s := &services.Server{H: h}
 
 	grpcServer := grpc.NewServer()
@@ -62,7 +62,7 @@ func main() {
 	scheduler.RegisterSchedulerServer(grpcServer, s)
 
 	reflection.Register(grpcServer)
-	log.Printf("services listening ar port %v", lis.Addr())
+	log.Printf("services listening at port %v", lis.Addr())
 
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

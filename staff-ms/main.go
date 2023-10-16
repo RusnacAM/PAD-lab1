@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	HOST = "localhost"
+	HOST = "staff-ms"
 	PORT = "8080"
 	TYPE = "tcp"
 )
@@ -50,7 +50,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	registerSelf()
+	//registerSelf()
 	s := &services.Server{H: h}
 
 	grpcServer := grpc.NewServer()

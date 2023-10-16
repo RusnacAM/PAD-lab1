@@ -22,7 +22,7 @@ type Server struct {
 func getAvailability(staffID string) bool {
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 
-	conn, err := grpc.Dial("localhost:8080", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial("staff-ms:8080", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		panic(err)
 	}

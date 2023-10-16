@@ -6,3 +6,6 @@ build:
 
 serve:
 	go run main.go
+
+#docker-img:
+# 	docker build --tag schedule .

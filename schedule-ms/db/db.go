@@ -15,7 +15,7 @@ type Handler struct {
 }
 
 func Init() Handler {
-	host := "localhost"
+	host := "schedule-db"
 	port := "5432"
 	dbName := "scheduler_svc"
 	dbUser := "postgres"

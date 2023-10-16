@@ -13,7 +13,7 @@ type Handler struct {
 }
 
 func Init() Handler {
-	host := "localhost"
+	host := "staff-db"
 	port := "5432"
 	dbName := "staff_svc"
 	dbUser := "postgres"
