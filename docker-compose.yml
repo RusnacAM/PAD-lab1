@@ -14,8 +14,6 @@ services:
       - "5436:5432"
     expose:
       - "5432"
-    depends_on:
-      - service_discovery
   staff_db:
     container_name: "staff-db"
     image: postgres:16.0
@@ -29,47 +27,42 @@ services:
       - "5437:5432"
     expose:
       - "5432"
-    depends_on:
-      - service_discovery
   scheduler_1:
     build: ./schedule-ms
-    container_name: "schedule-ms-1"
+    container_name: "schedule-ms-0"
     ports:
       - "3030:3030"
     depends_on:
       - schedule_db
-#      - staff
       - service_discovery
     environment:
       - SVC_PORT=3030
       - SVC_HOST=schedule-ms-0
   scheduler_2:
     build: ./schedule-ms
-    container_name: "schedule-ms-2"
+    container_name: "schedule-ms-1"
     ports:
       - "3031:3031"
     depends_on:
       - schedule_db
-      #      - staff
       - service_discovery
     environment:
       - SVC_PORT=3031
       - SVC_HOST=schedule-ms-1
   scheduler_3:
     build: ./schedule-ms
-    container_name: "schedule-ms-3"
+    container_name: "schedule-ms-2"
     ports:
       - "3032:3032"
     depends_on:
       - schedule_db
-      #      - staff
       - service_discovery
     environment:
       - SVC_PORT=3032
       - SVC_HOST=schedule-ms-2
   staff_1:
     build: ./staff-ms
-    container_name: "staff-ms-1"
+    container_name: "staff-ms-0"
     ports:
       - "8080:8080"
     depends_on:
@@ -80,9 +73,11 @@ services:
       - SVC_HOST=staff-ms-0
   staff_2:
     build: ./staff-ms
-    container_name: "staff-ms-2"
+    container_name: "staff-ms-1"
     ports:
       - "8081:8081"
+    tty:
+      true
     depends_on:
       - staff_db
       - service_discovery
@@ -91,9 +86,11 @@ services:
       - SVC_HOST=staff-ms-1
   staff_3:
     build: ./staff-ms
-    container_name: "staff-ms-3"
+    container_name: "staff-ms-2"
     ports:
       - "8082:8082"
+    tty:
+      true
     depends_on:
       - staff_db
       - service_discovery
@@ -105,17 +102,19 @@ services:
     container_name: "service-discovery"
     ports:
       - "5051:5051"
-#  gateway:
-#    build: ./gateway
-#    container_name: "gateway"
-#    ports:
-#      - "5050:5050"
-#    expose:
-#      - "5050"
-#    tty:
-#      true
-#    depends_on:
-#      - service_discovery
-#      - scheduler
-#      - staff
-
+    depends_on:
+      staff_db:
+        condition: service_started
+      schedule_db:
+        condition: service_started
+  gateway:
+    build: ./gateway
+    container_name: "gateway"
+    ports:
+      - "5050:5050"
+    expose:
+      - "5050"
+    tty:
+      true
+    depends_on:
+      - service_discovery
