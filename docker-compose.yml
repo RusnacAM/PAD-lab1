@@ -14,7 +14,6 @@ services:
       - schedule_db
       - staff
       - service_discovery
-      - gateway
   schedule_db:
     container_name: "schedule-db"
     image: postgres:16.0
@@ -28,6 +27,8 @@ services:
       - "5436:5432"
     expose:
       - "5432"
+    depends_on:
+      - service_discovery
   staff:
     build: ./staff-ms
     container_name: "staff-ms"
@@ -40,7 +41,6 @@ services:
     depends_on:
       - staff_db
       - service_discovery
-      - gateway
   staff_db:
     container_name: "staff-db"
     image: postgres:16.0
@@ -54,24 +54,28 @@ services:
       - "5437:5432"
     expose:
       - "5432"
-  # service_discovery:
-  #   build: ./service-discovery
-  #   container_name: "service-discovery"
-  #   ports:
-  #     - "5051:5051"
-  #   expose:
-  #     - "5051"
-  #   tty:
-  #     true
-  # gateway:
-  #   build: ./gateway
-  #   container_name: "gateway"
-  #   ports:
-  #     - "5050:5050"
-  #   expose:
-  #     - "5050"
-  #   tty:
-  #     true
-  #   depends_on:
-  #     - service_discovery
+    depends_on:
+      - service_discovery
+  service_discovery:
+    build: ./service-discovery
+    container_name: "service-discovery"
+    ports:
+      - "5051:5051"
+    expose:
+      - "5051"
+    tty:
+      true
+  gateway:
+    build: ./gateway
+    container_name: "gateway"
+    ports:
+      - "5050:5050"
+    expose:
+      - "5050"
+    tty:
+      true
+    depends_on:
+      - service_discovery
+      - scheduler
+      - staff
 

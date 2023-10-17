@@ -28,7 +28,7 @@ func registerSelf() {
 		"svc":   "scheduler_svc",
 	})
 	respBody := bytes.NewBuffer(reqBody)
-	resp, err := http.Post("http://localhost:5051/route", "application/json", respBody)
+	resp, err := http.Post("http://service-discovery:5051/route", "application/json", respBody)
 
 	if err != nil {
 		log.Fatalf("An Error Ocurred %v", err)
@@ -49,7 +49,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	//registerSelf()
+	registerSelf()
 	s := &services.Server{H: h}
 
 	grpcServer := grpc.NewServer()

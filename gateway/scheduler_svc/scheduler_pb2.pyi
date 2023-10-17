@@ -7,18 +7,18 @@ from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Map
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class Appointment(_message.Message):
-    __slots__ = ["apptID", "patientName", "doctorName", "apptDateTime", "apptType"]
+    __slots__ = ["apptID", "patientName", "staffID", "apptDateTime", "apptType"]
     APPTID_FIELD_NUMBER: _ClassVar[int]
     PATIENTNAME_FIELD_NUMBER: _ClassVar[int]
-    DOCTORNAME_FIELD_NUMBER: _ClassVar[int]
+    STAFFID_FIELD_NUMBER: _ClassVar[int]
     APPTDATETIME_FIELD_NUMBER: _ClassVar[int]
     APPTTYPE_FIELD_NUMBER: _ClassVar[int]
     apptID: str
     patientName: str
-    doctorName: str
+    staffID: str
     apptDateTime: str
     apptType: str
-    def __init__(self, apptID: _Optional[str] = ..., patientName: _Optional[str] = ..., doctorName: _Optional[str] = ..., apptDateTime: _Optional[str] = ..., apptType: _Optional[str] = ...) -> None: ...
+    def __init__(self, apptID: _Optional[str] = ..., patientName: _Optional[str] = ..., staffID: _Optional[str] = ..., apptDateTime: _Optional[str] = ..., apptType: _Optional[str] = ...) -> None: ...
 
 class CreateAppointment(_message.Message):
     __slots__ = ["appointment"]
