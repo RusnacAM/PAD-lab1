@@ -12,7 +12,8 @@ def register_route():
         routes[data["svc"]].append(data["route"])
         response = jsonify({'message': 'route registered successfully'})
     else:
-        routes[data["svc"]] = data["route"]
+        routes[data["svc"]] = []
+        routes[data["svc"]].append(data["route"])
         response = jsonify({'message': 'route registered successfully'})
 
     return response, 200

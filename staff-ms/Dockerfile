@@ -13,8 +13,5 @@ WORKDIR /app
 # GO build will build an executable file named client in curr dir
 RUN go build -o staff .
 
-# Expose port
-EXPOSE 3030
-
 # Run dining-hall
-CMD [ "/app/staff" ]
+CMD [ "/app/staff", "--host=0.0.0.0" , "--port=$SVC_PORT"]

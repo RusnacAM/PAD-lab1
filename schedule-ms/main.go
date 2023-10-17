@@ -11,14 +11,15 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"schedule-ms/api/scheduler"
 	"schedule-ms/db"
 	"schedule-ms/services"
 )
 
-const (
-	HOST = "schedule-ms"
-	PORT = "3030"
+var (
+	HOST = os.Getenv("SVC_HOST")
+	PORT = os.Getenv("SVC_PORT")
 	TYPE = "tcp"
 )
 

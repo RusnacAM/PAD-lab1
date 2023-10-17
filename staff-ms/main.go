@@ -11,14 +11,15 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 	staff_records "staff-ms/api/staff-records"
 	"staff-ms/db"
 	services "staff-ms/services"
 )
 
-const (
-	HOST = "staff-ms"
-	PORT = "8080"
+var (
+	HOST = os.Getenv("SVC_HOST")
+	PORT = os.Getenv("SVC_PORT")
 	TYPE = "tcp"
 )
 
