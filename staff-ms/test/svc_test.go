@@ -61,7 +61,7 @@ func TestCreateStaff(t *testing.T) {
 		err error
 	}
 
-	staffRecord := staff_records.StaffRecord{
+	staffRecord := &staff_records.StaffRecord{
 		StaffID:     "123",
 		Name:        "John Doe",
 		JobTitle:    "Nurse",
@@ -75,7 +75,7 @@ func TestCreateStaff(t *testing.T) {
 	}{
 		"Must_Success": {
 			in: &staff_records.CreateStaff{
-				Staff: &staffRecord,
+				Staff: staffRecord,
 			},
 			expected: expectation{
 				out: &staff_records.CreateResponse{
@@ -106,3 +106,52 @@ func TestCreateStaff(t *testing.T) {
 	}
 
 }
+
+//func TestGetStaffAvailability(t *testing.T) {
+//	ctx := context.Background()
+//
+//	client, closer := server(ctx)
+//	defer closer()
+//
+//	type expectation struct {
+//		out *staff_records.GetAvailabilityResponse
+//		err error
+//	}
+//
+//	tests := map[string]struct {
+//		in       *staff_records.GetStaffAvailability
+//		expected expectation
+//	}{
+//		"Must_Success": {
+//			in: &staff_records.CreateStaff{
+//				Staff: staffRecord,
+//			},
+//			expected: expectation{
+//				out: &staff_records.CreateResponse{
+//					StaffID: "",
+//					Message: "Appointment created successfully",
+//					Error:   "",
+//				},
+//				err: nil,
+//			},
+//		},
+//	}
+//
+//	for scenario, tt := range tests {
+//		t.Run(scenario, func(t *testing.T) {
+//			out, err := client.Create(ctx, tt.in)
+//			if err != nil {
+//				if tt.expected.err.Error() != err.Error() {
+//					t.Errorf("Err -> \nWant: %q\nGot: %q\n", tt.expected.err, err)
+//				}
+//			} else {
+//				if tt.expected.out.Message != out.Message ||
+//					tt.expected.out.Error != out.Error {
+//					t.Errorf("Out -> \nWant: %q\nGot : %q", tt.expected.out, out)
+//				}
+//			}
+//
+//		})
+//	}
+//
+//}

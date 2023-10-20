@@ -1,6 +1,7 @@
 import logging
 import grpc
 import requests
+import os
 from flask import Flask, request, jsonify
 from functools import wraps
 from threading import Lock
@@ -12,6 +13,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from google.protobuf.json_format import MessageToDict
 from expiringdict import ExpiringDict
+from circuit_breaker import circuit_breaker
 
 app = Flask(__name__)
 
@@ -24,7 +26,6 @@ limiter = Limiter(
 
 )
 lock = Lock()
-# svc_stub = {}
 
 def cache_req(f):
     @wraps(f)
@@ -42,7 +43,7 @@ def cache_req(f):
 prev_svc = 0
 def get_svc(svc_type):
     try:
-        response = requests.get(serv_discovery, timeout=0.5)
+        response = requests.get(serv_discovery, timeout=float(os.environ["TIMEOUT"]))
     except requests.exceptions.Timeout:
         response = "service discovery timed out"
         return response
@@ -64,18 +65,19 @@ def get_svc(svc_type):
 
 
 @app.route("/appointment", methods=['GET'])
+@circuit_breaker
 @limiter.limit("10 per minute", override_defaults=False)
 @cache_req
 def get_appointments():
     try:
         stub = get_svc("scheduler_svc")
-        response = stub.GetAppt(scheduler_pb2.GetAppointments(), timeout=0.5)
+        response = stub.GetAppt(scheduler_pb2.GetAppointments(), timeout=float(os.environ["TIMEOUT"]))
     except grpc.RpcError as e:
-        response = jsonify({'message': 'get appointments timed out'})
-        return response, 408
+        raise grpc.RpcError
     return MessageToDict(response)
 
 @app.route("/appointment", methods=['POST'])
+@circuit_breaker
 @limiter.limit("10 per minute", override_defaults=False)
 def create_appointment():
     data = request.get_json()
@@ -87,13 +89,13 @@ def create_appointment():
             "staffID": appt_data["staffID"],
             "apptDateTime": appt_data["apptDateTime"],
             "apptType": appt_data["apptType"]
-        }), timeout=0.5)
+        }), timeout=float(os.environ["TIMEOUT"]))
     except grpc.RpcError as e:
-        response = jsonify({'message': 'create appointment timed out'})
-        return response, 408
+        raise grpc.RpcError
     return MessageToDict(response)
 
 @app.route("/appointment", methods=['PUT'])
+@circuit_breaker
 @limiter.limit("10 per minute", override_defaults=False)
 def update_appointment():
     data = request.get_json()
@@ -106,51 +108,51 @@ def update_appointment():
             "staffID": appt_data["staffID"],
             "apptDateTime": appt_data["apptDateTime"],
             "apptType": appt_data["apptType"]
-        }), timeout=0.5)
+        }), timeout=float(os.environ["TIMEOUT"]))
     except grpc.RpcError as e:
-        response = jsonify({'message': 'update appointment timed out'})
-        return response, 408
+        raise grpc.RpcError
     return MessageToDict(response)
 
 @app.route("/appointment", methods=['DELETE'])
+@circuit_breaker
 @limiter.limit("10 per minute", override_defaults=False)
 def delete_appointment():
     data = request.get_json()
     req_id = data["apptID"]
     try:
         stub = get_svc("scheduler_svc")
-        response = stub.DeleteAppt(scheduler_pb2.DeleteAppointment(apptID=req_id), timeout=0.5)
+        response = stub.DeleteAppt(scheduler_pb2.DeleteAppointment(apptID=req_id), timeout=float(os.environ["TIMEOUT"]))
     except grpc.RpcError as e:
-        response = jsonify({'message': 'delete appointment timed out'})
-        return response, 408
+        raise grpc.RpcError
     return MessageToDict(response)
 
 @app.route("/staff", methods=['GET'])
+@circuit_breaker
 @limiter.limit("10 per minute", override_defaults=False)
 @cache_req
 def get_staff():
     try:
         stub = get_svc("staff_svc")
-        response = stub.Get(staff_records_pb2.GetStaffRecords(), timeout=0.5)
+        response = stub.Get(staff_records_pb2.GetStaffRecords(), timeout=float(os.environ["TIMEOUT"]))
     except grpc.RpcError as e:
-        response = jsonify({'message': 'get staff timed out'})
-        return response, 408
+        raise grpc.RpcError
     return MessageToDict(response)
 
 @app.route("/staff/availability", methods=['GET'])
+@circuit_breaker
 @limiter.limit("10 per minute", override_defaults=False)
 def get_staff_availability():
     data = request.get_json()
     req_id = data["staffID"]
     try:
         stub = get_svc("staff_svc")
-        response = stub.GetAvailability(staff_records_pb2.GetStaffAvailability(staffID=req_id), timeout=0.5)
+        response = stub.GetAvailability(staff_records_pb2.GetStaffAvailability(staffID=req_id), timeout=float(os.environ["TIMEOUT"]))
     except grpc.RpcError as e:
-        response = jsonify({'message': 'get staff availability timed out'})
-        return response, 408
+        raise grpc.RpcError
     return MessageToDict(response)
 
 @app.route("/staff", methods=['POST'])
+@circuit_breaker
 @limiter.limit("10 per minute", override_defaults=False)
 def create_staff():
     data = request.get_json()
@@ -162,13 +164,13 @@ def create_staff():
             "jobTitle": staff_data["jobTitle"],
             "department": staff_data["department"],
             "isAvailable": staff_data["isAvailable"]
-        }), timeout=0.5)
+        }), timeout=float(os.environ["TIMEOUT"]))
     except grpc.RpcError as e:
-        response = jsonify({'message': 'create staff timed out'})
-        return response, 408
+        raise grpc.RpcError
     return MessageToDict(response)
 
 @app.route("/staff", methods=['PUT'])
+@circuit_breaker
 @limiter.limit("10 per minute", override_defaults=False)
 def update_staff():
     data = request.get_json()
@@ -183,23 +185,22 @@ def update_staff():
             "jobTitle": staff_data["jobTitle"],
             "department": staff_data["department"],
             "isAvailable": staff_data["isAvailable"]
-        }), timeout=0.5)
+        }), timeout=float(os.environ["TIMEOUT"]))
     except grpc.RpcError as e:
-        response = jsonify({'message': 'update staff timed out'})
-        return response, 408
+        raise grpc.RpcError
     return MessageToDict(response)
 
 @app.route("/staff", methods=['DELETE'])
+@circuit_breaker
 @limiter.limit("10 per minute", override_defaults=False)
 def delete_staff():
     data = request.get_json()
     req_id = data["staffID"]
     try:
         stub = get_svc("staff_svc")
-        response = stub.Delete(staff_records_pb2.DeleteStaff(staffID=req_id), timeout=0.5)
+        response = stub.Delete(staff_records_pb2.DeleteStaff(staffID=req_id), timeout=float(os.environ["TIMEOUT"]))
     except grpc.RpcError as e:
-        response = jsonify({'message': 'delete staff timed out'})
-        return response, 408
+        raise grpc.RpcError
     return MessageToDict(response)
 
 @app.route("/health", methods=['GET'])
@@ -210,7 +211,7 @@ def get_health():
 
 @app.errorhandler(429)
 def ratelimit_handler(e):
-  return "Too many requests. You have exceeded your rate-limit."
+  return "Too many requests. You have exceeded your rate-limit.", 429
 
 if __name__ == "__main__":
     logging.basicConfig()
