@@ -5,6 +5,7 @@ from flask import jsonify
 import grpc
 import logging
 import os
+import json
 
 logging.basicConfig(
     level=logging.INFO,
@@ -30,6 +31,6 @@ def circuit_breaker(f):
                 if delta_time <= delay:
                     logging.info("The service accessed is currently down!")
                     return jsonify({'message': 'The service accessed is currently down and cannot be reached!'}), 503
-            response = jsonify({'message': 'update appointment timed out'})
+            response = jsonify({'message': "An unexpected error occurred."})
             return response, 408
     return circuit_breaker_wrapper

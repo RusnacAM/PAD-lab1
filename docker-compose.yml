@@ -10,6 +10,8 @@ services:
       POSTGRES_DB: ${SCHEDULE_DB_NAME}
       POSTGRES_USER: ${SCHEDULE_DB_USER}
       POSTGRES_PASSWORD: ${SCHEDULE_DB_PASSWORD}
+    volumes:
+      - scheduler_volume:/var/lib/postgresql/data
     ports:
       - "5436:5432"
     expose:
@@ -23,6 +25,8 @@ services:
       POSTGRES_DB: ${STAFF_DB_NAME}
       POSTGRES_USER: ${STAFF_DB_USER}
       POSTGRES_PASSWORD: ${STAFF_DB_PASSWORD}
+    volumes:
+      - staff_volume:/var/lib/postgresql/data
     ports:
       - "5437:5432"
     expose:
@@ -126,4 +130,9 @@ services:
     depends_on:
       - service_discovery
     environment:
-    - TIMEOUT=0.001
+    - TIMEOUT=0.5
+volumes:
+  scheduler_volume:
+    external: true
+  staff_volume:
+    external: true

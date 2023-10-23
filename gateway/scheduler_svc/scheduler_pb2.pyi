@@ -27,28 +27,26 @@ class CreateAppointment(_message.Message):
     def __init__(self, appointment: _Optional[_Union[Appointment, _Mapping]] = ...) -> None: ...
 
 class CreateResponse(_message.Message):
-    __slots__ = ["apptID", "status", "error"]
+    __slots__ = ["apptID", "message", "error"]
     APPTID_FIELD_NUMBER: _ClassVar[int]
-    STATUS_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
     ERROR_FIELD_NUMBER: _ClassVar[int]
     apptID: str
-    status: int
+    message: str
     error: str
-    def __init__(self, apptID: _Optional[str] = ..., status: _Optional[int] = ..., error: _Optional[str] = ...) -> None: ...
+    def __init__(self, apptID: _Optional[str] = ..., message: _Optional[str] = ..., error: _Optional[str] = ...) -> None: ...
 
 class GetAppointments(_message.Message):
     __slots__ = []
     def __init__(self) -> None: ...
 
 class GetResponse(_message.Message):
-    __slots__ = ["appointments", "status", "error"]
+    __slots__ = ["appointments", "error"]
     APPOINTMENTS_FIELD_NUMBER: _ClassVar[int]
-    STATUS_FIELD_NUMBER: _ClassVar[int]
     ERROR_FIELD_NUMBER: _ClassVar[int]
     appointments: _containers.RepeatedCompositeFieldContainer[Appointment]
-    status: int
     error: str
-    def __init__(self, appointments: _Optional[_Iterable[_Union[Appointment, _Mapping]]] = ..., status: _Optional[int] = ..., error: _Optional[str] = ...) -> None: ...
+    def __init__(self, appointments: _Optional[_Iterable[_Union[Appointment, _Mapping]]] = ..., error: _Optional[str] = ...) -> None: ...
 
 class UpdateAppointment(_message.Message):
     __slots__ = ["appointment"]
@@ -57,14 +55,14 @@ class UpdateAppointment(_message.Message):
     def __init__(self, appointment: _Optional[_Union[Appointment, _Mapping]] = ...) -> None: ...
 
 class UpdateResponse(_message.Message):
-    __slots__ = ["appointment", "status", "error"]
+    __slots__ = ["appointment", "message", "error"]
     APPOINTMENT_FIELD_NUMBER: _ClassVar[int]
-    STATUS_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
     ERROR_FIELD_NUMBER: _ClassVar[int]
     appointment: Appointment
-    status: int
+    message: str
     error: str
-    def __init__(self, appointment: _Optional[_Union[Appointment, _Mapping]] = ..., status: _Optional[int] = ..., error: _Optional[str] = ...) -> None: ...
+    def __init__(self, appointment: _Optional[_Union[Appointment, _Mapping]] = ..., message: _Optional[str] = ..., error: _Optional[str] = ...) -> None: ...
 
 class DeleteAppointment(_message.Message):
     __slots__ = ["apptID"]
@@ -73,14 +71,14 @@ class DeleteAppointment(_message.Message):
     def __init__(self, apptID: _Optional[str] = ...) -> None: ...
 
 class DeleteResponse(_message.Message):
-    __slots__ = ["apptID", "status", "error"]
+    __slots__ = ["apptID", "message", "error"]
     APPTID_FIELD_NUMBER: _ClassVar[int]
-    STATUS_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
     ERROR_FIELD_NUMBER: _ClassVar[int]
     apptID: str
-    status: int
+    message: str
     error: str
-    def __init__(self, apptID: _Optional[str] = ..., status: _Optional[int] = ..., error: _Optional[str] = ...) -> None: ...
+    def __init__(self, apptID: _Optional[str] = ..., message: _Optional[str] = ..., error: _Optional[str] = ...) -> None: ...
 
 class HealthCheckRequest(_message.Message):
     __slots__ = ["service"]

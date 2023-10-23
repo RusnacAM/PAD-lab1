@@ -31,7 +31,7 @@ func (m *Server) Create(ctx context.Context, request *staff_records.CreateStaff)
 		}, nil
 	}
 
-	return &staff_records.CreateResponse{StaffID: staff.StaffID, Message: "Appointment created successfully"}, nil
+	return &staff_records.CreateResponse{StaffID: staff.StaffID, Message: "Staff record created successfully"}, nil
 }
 
 func (m *Server) Get(ctx context.Context, request *staff_records.GetStaffRecords) (*staff_records.GetResponse, error) {

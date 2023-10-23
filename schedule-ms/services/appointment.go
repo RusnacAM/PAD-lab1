@@ -6,7 +6,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
-	"net/http"
 	"schedule-ms/api/scheduler"
 	"schedule-ms/api/staff"
 	"schedule-ms/db"
@@ -22,7 +21,7 @@ type Server struct {
 func getAvailability(staffID string) bool {
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 
-	conn, err := grpc.Dial("staff-ms:8080", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial("staff-ms-0:8080", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		panic(err)
 	}
@@ -51,16 +50,16 @@ func (m *Server) CreateAppt(_ context.Context, request *scheduler.CreateAppointm
 	availability := getAvailability(appointment.StaffID)
 
 	if !availability {
-		return &scheduler.CreateResponse{Status: http.StatusConflict, Error: "the doctor you requested is not available, choose another."}, nil
+		return &scheduler.CreateResponse{Message: "The doctor you requested is not available, choose another."}, nil
 	}
 
 	if result := m.H.DB.Create(&appointment); result.Error != nil {
-		return &scheduler.CreateResponse{Status: http.StatusConflict, Error: result.Error.Error()}, nil
+		return &scheduler.CreateResponse{Message: "The appointment could not be created due to an unexpected error.", Error: result.Error.Error()}, nil
 	}
 
 	return &scheduler.CreateResponse{
-		ApptID: appointment.ApptID,
-		Status: http.StatusCreated,
+		ApptID:  appointment.ApptID,
+		Message: "The appointment was created successfully",
 	}, nil
 }
 
@@ -69,10 +68,10 @@ func (m *Server) GetAppt(_ context.Context, _ *scheduler.GetAppointments) (*sche
 	appointments := []*scheduler.Appointment{}
 
 	if result := m.H.DB.Find(&appointments); result.Error != nil {
-		return &scheduler.GetResponse{Status: http.StatusConflict, Error: result.Error.Error()}, nil
+		return &scheduler.GetResponse{Error: result.Error.Error()}, nil
 	}
 
-	return &scheduler.GetResponse{Appointments: appointments, Status: http.StatusOK}, nil
+	return &scheduler.GetResponse{Appointments: appointments}, nil
 }
 
 func (m *Server) UpdateAppt(_ context.Context, request *scheduler.UpdateAppointment) (*scheduler.UpdateResponse, error) {
@@ -83,7 +82,7 @@ func (m *Server) UpdateAppt(_ context.Context, request *scheduler.UpdateAppointm
 	availability := getAvailability(reqAppts.StaffID)
 
 	if !availability {
-		return &scheduler.UpdateResponse{Status: http.StatusConflict, Error: "the doctor you requested is not available, choose another."}, nil
+		return &scheduler.UpdateResponse{Message: "Appointment could not be updated due to staff availability, choose another staff."}, nil
 	}
 
 	if result := m.H.DB.Model(&appointment).Where("appt_id=?", reqAppts.ApptID).Updates(models.Appointment{
@@ -92,7 +91,7 @@ func (m *Server) UpdateAppt(_ context.Context, request *scheduler.UpdateAppointm
 		ApptDateTime: reqAppts.ApptDateTime,
 		ApptType:     reqAppts.ApptType,
 	}); result.Error != nil {
-		return &scheduler.UpdateResponse{Status: http.StatusConflict, Error: result.Error.Error()}, nil
+		return &scheduler.UpdateResponse{Message: "Appointment could not be updated.", Error: result.Error.Error()}, nil
 	}
 
 	return &scheduler.UpdateResponse{Appointment: &scheduler.Appointment{
@@ -101,7 +100,7 @@ func (m *Server) UpdateAppt(_ context.Context, request *scheduler.UpdateAppointm
 		PatientName:  appointment.PatientName,
 		ApptDateTime: appointment.ApptDateTime,
 		ApptType:     appointment.ApptType,
-	}, Status: 0, Error: ""}, nil
+	}, Message: "Appointment updated successfully."}, nil
 }
 
 func (m *Server) DeleteAppt(_ context.Context, request *scheduler.DeleteAppointment) (*scheduler.DeleteResponse, error) {
@@ -110,10 +109,10 @@ func (m *Server) DeleteAppt(_ context.Context, request *scheduler.DeleteAppointm
 	reqID := request.GetApptID()
 
 	if result := m.H.DB.Where("appt_id=?", reqID).Delete(&appointment); result.Error != nil {
-		return &scheduler.DeleteResponse{Status: http.StatusConflict, Error: result.Error.Error()}, nil
+		return &scheduler.DeleteResponse{Message: "Appointment could not be deleted.", Error: result.Error.Error()}, nil
 	}
 
-	return &scheduler.DeleteResponse{ApptID: reqID, Status: http.StatusOK}, nil
+	return &scheduler.DeleteResponse{ApptID: reqID, Message: "Appointment deleted successfully."}, nil
 }
 
 func (m *Server) Check(_ context.Context, _ *scheduler.HealthCheckRequest) (*scheduler.HealthCheckResponse, error) {

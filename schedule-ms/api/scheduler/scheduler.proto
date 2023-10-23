@@ -30,7 +30,7 @@ message CreateAppointment {
 
 message CreateResponse {
     string apptID = 1;
-    uint64 status = 2;
+    string message = 2;
     string error = 3;
 }
 
@@ -40,8 +40,7 @@ message GetAppointments {}
 
 message GetResponse {
     repeated Appointment appointments = 1;
-    uint64 status = 2;
-    string error = 3;
+    string error = 2;
 }
 
 // UPDATE
@@ -52,7 +51,7 @@ message UpdateAppointment {
 
 message UpdateResponse {
     Appointment appointment = 1;
-    uint64 status = 2;
+    string message = 2;
     string error = 3;
 }
 
@@ -64,7 +63,7 @@ message DeleteAppointment {
 
 message DeleteResponse {
     string apptID = 1;
-    uint64 status = 2;
+    string message = 2;
     string error = 3;
 }
 
