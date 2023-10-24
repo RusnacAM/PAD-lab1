@@ -133,6 +133,6 @@ services:
     - TIMEOUT=0.5
 volumes:
   scheduler_volume:
-    external: true
+    driver: local
   staff_volume:
-    external: true
+    driver: local

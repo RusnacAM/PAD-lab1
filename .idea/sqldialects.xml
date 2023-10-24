@@ -2,5 +2,6 @@
 <project version="4">
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/schedule-ms/main.go" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/staff-ms/test/svc_test.go" dialect="GenericSQL" />
   </component>
 </project>

@@ -8,17 +8,13 @@ import (
 	"log"
 	"net"
 	staff_records "staff-ms/api/staff-records"
-	"staff-ms/db"
+	db "staff-ms/db"
 	"staff-ms/services"
 	"testing"
 )
 
-type StaffServer struct {
-	staff_records.UnimplementedStaffRecordsServer
-}
-
 func server(ctx context.Context) (staff_records.StaffRecordsClient, func()) {
-	h := db.Init()
+	h := db.Init("0.0.0.0", "test_db")
 	buffer := 1024 * 1024
 	listener := bufconn.Listen(buffer)
 
@@ -48,6 +44,7 @@ func server(ctx context.Context) (staff_records.StaffRecordsClient, func()) {
 			log.Printf("error closing listener: %v", err)
 		}
 		baseServer.Stop()
+		h.DB.Exec("TRUNCATE TABLE staff_records")
 	}
 
 	client := staff_records.NewStaffRecordsClient(conn)
@@ -67,7 +64,6 @@ func TestCreateStaff(t *testing.T) {
 	}
 
 	staffRecord := &staff_records.StaffRecord{
-		StaffID:     "123",
 		Name:        "John Doe",
 		JobTitle:    "Nurse",
 		Department:  "Emergency",
@@ -121,6 +117,18 @@ func TestGetStaff(t *testing.T) {
 		err error
 	}
 
+	staffRecord := &staff_records.StaffRecord{
+		Name:        "John Doe",
+		JobTitle:    "Nurse",
+		Department:  "Emergency",
+		IsAvailable: true,
+	}
+
+	resp, err := client.Create(ctx, &staff_records.CreateStaff{Staff: staffRecord})
+	if err != nil {
+		panic(err)
+	}
+
 	tests := map[string]struct {
 		in       *staff_records.GetStaffRecords
 		expected expectation
@@ -129,7 +137,15 @@ func TestGetStaff(t *testing.T) {
 			in: &staff_records.GetStaffRecords{},
 			expected: expectation{
 				out: &staff_records.GetResponse{
-					StaffRecords: []*staff_records.StaffRecord{},
+					StaffRecords: []*staff_records.StaffRecord{
+						{
+							StaffID:     resp.StaffID,
+							Name:        staffRecord.Name,
+							JobTitle:    staffRecord.JobTitle,
+							Department:  staffRecord.Department,
+							IsAvailable: staffRecord.IsAvailable,
+						},
+					},
 				},
 				err: nil,
 			},
@@ -144,7 +160,11 @@ func TestGetStaff(t *testing.T) {
 					t.Errorf("Err -> \nWant: %q\nGot: %q\n", tt.expected.err, err)
 				}
 			} else {
-				if tt.expected.out.StaffRecords != nil {
+				if tt.expected.out.StaffRecords[0].StaffID != out.StaffRecords[0].StaffID ||
+					tt.expected.out.StaffRecords[0].Name != out.StaffRecords[0].Name ||
+					tt.expected.out.StaffRecords[0].JobTitle != out.StaffRecords[0].JobTitle ||
+					tt.expected.out.StaffRecords[0].Department != out.StaffRecords[0].Department ||
+					tt.expected.out.StaffRecords[0].IsAvailable != out.StaffRecords[0].IsAvailable {
 					t.Errorf("Out -> \nWant: %q\nGot : %q", tt.expected.out, out)
 				}
 			}
@@ -165,18 +185,30 @@ func TestGetStaffAvailability(t *testing.T) {
 		err error
 	}
 
+	staffRecord := &staff_records.StaffRecord{
+		Name:        "John Doe",
+		JobTitle:    "Nurse",
+		Department:  "Emergency",
+		IsAvailable: true,
+	}
+
+	resp, err := client.Create(ctx, &staff_records.CreateStaff{Staff: staffRecord})
+	if err != nil {
+		panic(err)
+	}
+
 	tests := map[string]struct {
 		in       *staff_records.GetStaffAvailability
 		expected expectation
 	}{
 		"Must_Success": {
 			in: &staff_records.GetStaffAvailability{
-				StaffID: "5d4091a1-ea35-4844-8e04-8085acadb60a",
+				StaffID: resp.StaffID,
 			},
 			expected: expectation{
 				out: &staff_records.GetAvailabilityResponse{
-					StaffID:     "5d4091a1-ea35-4844-8e04-8085acadb60a",
-					IsAvailable: true,
+					StaffID:     resp.StaffID,
+					IsAvailable: staffRecord.IsAvailable,
 					Error:       "",
 				},
 				err: nil,
@@ -215,11 +247,23 @@ func TestUpdateStaff(t *testing.T) {
 	}
 
 	staffRecord := &staff_records.StaffRecord{
-		StaffID:     "e9539d9c-791f-4779-8b67-c19b4f17ce63",
-		Name:        "Test Update John Doe",
+		Name:        "John Doe",
 		JobTitle:    "Nurse",
 		Department:  "Emergency",
 		IsAvailable: true,
+	}
+
+	resp, err := client.Create(ctx, &staff_records.CreateStaff{Staff: staffRecord})
+	if err != nil {
+		panic(err)
+	}
+
+	updateRecord := &staff_records.StaffRecord{
+		StaffID:     resp.StaffID,
+		Name:        "Jane Doe",
+		JobTitle:    "Radiologist",
+		Department:  "Radiology",
+		IsAvailable: false,
 	}
 
 	tests := map[string]struct {
@@ -228,11 +272,11 @@ func TestUpdateStaff(t *testing.T) {
 	}{
 		"Must_Success": {
 			in: &staff_records.UpdateStaff{
-				StaffRecord: staffRecord,
+				StaffRecord: updateRecord,
 			},
 			expected: expectation{
 				out: &staff_records.UpdateResponse{
-					StaffID: "e9539d9c-791f-4779-8b67-c19b4f17ce63",
+					StaffID: resp.StaffID,
 					Message: "staff record successfully updated",
 					Error:   "",
 				},
@@ -271,17 +315,29 @@ func TestDeleteStaff(t *testing.T) {
 		err error
 	}
 
+	staffRecord := &staff_records.StaffRecord{
+		Name:        "John Doe",
+		JobTitle:    "Nurse",
+		Department:  "Emergency",
+		IsAvailable: true,
+	}
+
+	resp, err := client.Create(ctx, &staff_records.CreateStaff{Staff: staffRecord})
+	if err != nil {
+		panic(err)
+	}
+
 	tests := map[string]struct {
 		in       *staff_records.DeleteStaff
 		expected expectation
 	}{
 		"Must_Success": {
 			in: &staff_records.DeleteStaff{
-				StaffID: "88286efe-d413-478c-b500-ccd55505b493",
+				StaffID: resp.StaffID,
 			},
 			expected: expectation{
 				out: &staff_records.DeleteResponse{
-					StaffID: "88286efe-d413-478c-b500-ccd55505b493",
+					StaffID: resp.StaffID,
 					Message: "record successfully deleted",
 					Error:   "",
 				},

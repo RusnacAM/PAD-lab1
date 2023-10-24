@@ -45,7 +45,7 @@ func registerSelf() {
 }
 
 func main() {
-	h := db.Init()
+	h := db.Init("staff-db", "staff_svc")
 
 	lis, err := net.Listen(TYPE, HOST+":"+PORT)
 	if err != nil {
