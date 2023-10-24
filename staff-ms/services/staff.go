@@ -61,7 +61,6 @@ func (m *Server) Update(ctx context.Context, request *staff_records.UpdateStaff)
 	log.Println("Update called")
 	var staff models.StaffRecord
 	reqStaff := request.GetStaffRecord()
-	log.Println(reqStaff.IsAvailable)
 
 	if result := m.H.DB.Model(&staff).Where("staff_id=?", reqStaff.StaffID).Select("*").Updates(models.StaffRecord{
 		StaffID:     reqStaff.StaffID,
