@@ -31,6 +31,13 @@ services:
       - "5437:5432"
     expose:
       - "5432"
+  test_db:
+    container_name: "test-db"
+    image: postgres:16.0
+    ports:
+      - "5438:5432"
+    expose:
+      - "5432"
   scheduler_1:
     build: ./schedule-ms
     container_name: "schedule-ms-0"

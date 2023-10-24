@@ -5,7 +5,6 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
-	"os"
 	"staff-ms/models"
 )
 
@@ -16,7 +15,7 @@ type Handler struct {
 func Init(host string, dbName string) Handler {
 	port := "5432"
 	dbUser := "postgres"
-	password := os.Getenv("STAFF_DB_PASSWORD")
+	password := "password123"
 	dsn := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable",
 		host,
 		port,
