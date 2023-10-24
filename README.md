@@ -123,7 +123,6 @@ Staff Records Endpoints:
    ```
    {
         "staff": {
-            // "staffID": "frgar",
             "name": "Linda Mary",
             "jobTitle": "Cardiologist",
             "department": "Cardiology",
