@@ -7,6 +7,9 @@
 
 All the endpoints defined below can be accessed through the gateway at ```http://localhost:5050/``` after ensuring the container is running properly.
 
+When accessing the gateway, you should first create some staff records if you don't have any, since shceduling appointments
+is dependent on staff availability.
+
 ## Application Suitability
 
 1. Healthcare and patient service will always be a relevant topic, in countries with or without free healthcare, you will still need a sort of booking system for appointments

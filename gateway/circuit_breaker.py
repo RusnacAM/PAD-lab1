@@ -15,7 +15,7 @@ logging.basicConfig(
 
 def circuit_breaker(f):
     failure_timestamps = []
-    delay = 0.5 * 3.5 * 1000
+    delay = float(os.environ["TIMEOUT"]) * 3.5 * 1000
     threshold = 3
 
     @wraps(f)
