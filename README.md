@@ -29,7 +29,7 @@ If you want to run the unit test, use the command in the makefile, from the staf
 
 1. Service for appointment scheduling, includes create/update/read/delete appt
 2. Second service for staff records, which will include their availability, based on  which the appointments will be made
-3. ![System Architecture](https://cdn.discordapp.com/attachments/758662311287980075/1166452303079952454/Screenshot_2023-10-24_at_22.04.54.png?ex=654a8a5c&is=6538155c&hm=8a1772262e6a3e330018ec97589359bd1cd5ac9ff263af85aec5555a22965dcf&)
+3. ![System Architecture](https://cdn.discordapp.com/attachments/758662311287980075/1169589243920777246/Screenshot_2023-11-02_at_12.49.22.png?ex=6555f3dd&is=65437edd&hm=8217555665e99d936b6c091dfe798e3d5db7c290a9a18814f6df9f97d08bd67d&)
 
 ## Technology Stack
 
