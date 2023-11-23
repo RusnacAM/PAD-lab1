@@ -1,0 +1,18 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    metrics_path: /metrics
+    scheme: http
+    follow_redirects: true
+    static_configs:
+      - targets: [
+        'scheduler_1:3030',
+        'scheduler_2:3031',
+        'scheduler_3:3032',
+        'staff_1:8080',
+        'staff_2:8081',
+        'staff_3:8081',
+        'service_discovery:5051',
+        'gateway:5050']

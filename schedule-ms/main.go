@@ -3,6 +3,10 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/gookit/slog"
+	grpcprom "github.com/grpc-ecosystem/go-grpc-middleware/providers/prometheus"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
@@ -53,7 +57,19 @@ func main() {
 	registerSelf()
 	s := &services.Server{H: h}
 
-	grpcServer := grpc.NewServer()
+	srvMetrics := grpcprom.NewServerMetrics(
+		grpcprom.WithServerHandlingTimeHistogram(
+			grpcprom.WithHistogramBuckets([]float64{0.001, 0.01, 0.1, 0.3, 0.6, 1, 3, 6, 9, 20, 30, 60, 90, 120}),
+		),
+	)
+
+	reg := prometheus.NewRegistry()
+	reg.MustRegister(srvMetrics)
+
+	grpcServer := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(
+			srvMetrics.UnaryServerInterceptor(),
+		))
 	healthServer := health.NewServer()
 
 	healthServer.SetServingStatus("", grpc_health_v1.HealthCheckResponse_SERVING)
@@ -61,6 +77,16 @@ func main() {
 
 	grpc_health_v1.RegisterHealthServer(grpcServer, healthServer)
 	scheduler.RegisterSchedulerServer(grpcServer, s)
+
+	srvMetrics.InitializeMetrics(grpcServer)
+	http.Handle("/metrics", promhttp.HandlerFor(reg, promhttp.HandlerOpts{}))
+	go func() {
+		if err := http.ListenAndServe(":40000", nil); err != nil {
+			slog.Fatal(err)
+		} else {
+			slog.Info("HTTP server listening at 40000")
+		}
+	}()
 
 	reflection.Register(grpcServer)
 	log.Printf("services listening at port %v", lis.Addr())

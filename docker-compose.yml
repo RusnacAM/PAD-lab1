@@ -147,25 +147,29 @@ services:
     environment:
     - TIMEOUT=0.5
   prometheus:
-    container_name: "prometheus"
-    image: prom/prometheus:latest
-    volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-    restart: always
+    image: prom/prometheus:v2.37.9
+    container_name: prometheus
+    networks:
+      - e-petitions-network
     ports:
       - "9090:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus-data:/prometheus
+    restart: unless-stopped
+
   grafana:
-    container_name: "grafana"
-    image: grafana/grafana:latest
-    restart: always
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    networks:
+      - e-petitions-network
     ports:
       - "3000:3000"
     volumes:
-      - ./grafana:/etc/grafana/provisioning/
-    depends_on:
-      - prometheus
+      - grafana-data:/var/lib/grafana
+    restart: unless-stopped
 volumes:
   scheduler_volume:
     driver: local
