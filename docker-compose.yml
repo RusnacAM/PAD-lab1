@@ -146,6 +146,26 @@ services:
       - service_discovery
     environment:
     - TIMEOUT=0.5
+  prometheus:
+    container_name: "prometheus"
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    restart: always
+    ports:
+      - "9090:9090"
+  grafana:
+    container_name: "grafana"
+    image: grafana/grafana:latest
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana:/etc/grafana/provisioning/
+    depends_on:
+      - prometheus
 volumes:
   scheduler_volume:
     driver: local
