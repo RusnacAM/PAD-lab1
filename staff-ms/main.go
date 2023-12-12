@@ -22,10 +22,65 @@ import (
 )
 
 var (
-	HOST = os.Getenv("SVC_HOST")
-	PORT = os.Getenv("SVC_PORT")
-	TYPE = "tcp"
+	HOST    = os.Getenv("SVC_HOST")
+	PORT    = os.Getenv("SVC_PORT")
+	METRICS = os.Getenv("METRICS_PORT")
+	TYPE    = "tcp"
 )
+
+func main() {
+	h := db.Init("staff-db", "staff_svc")
+
+	lis, err := net.Listen(TYPE, HOST+":"+PORT)
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	registerSelf()
+	s := &services.Server{H: h}
+
+	srvMetrics := getMetricsServer()
+
+	grpcServer := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(
+			srvMetrics.UnaryServerInterceptor(),
+		))
+	healthServer := health.NewServer()
+
+	healthServer.SetServingStatus("", grpc_health_v1.HealthCheckResponse_SERVING)
+	healthServer.SetServingStatus(staff_records.StaffRecords_ServiceDesc.ServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
+
+	grpc_health_v1.RegisterHealthServer(grpcServer, healthServer)
+	staff_records.RegisterStaffRecordsServer(grpcServer, s)
+
+	srvMetrics.InitializeMetrics(grpcServer)
+
+	reflection.Register(grpcServer)
+
+	log.Printf("services listening ar port %v", lis.Addr())
+	if err := grpcServer.Serve(lis); err != nil {
+		log.Fatalf("failed to serve: %v", err)
+	}
+}
+
+func getMetricsServer() *grpcprom.ServerMetrics {
+	srvMetrics := grpcprom.NewServerMetrics(
+		grpcprom.WithServerHandlingTimeHistogram(
+			grpcprom.WithHistogramBuckets([]float64{0.001, 0.01, 0.1, 0.3, 0.6, 1, 3, 6, 9, 20, 30, 60, 90, 120}),
+		),
+	)
+
+	reg := prometheus.NewRegistry()
+	reg.MustRegister(srvMetrics)
+
+	http.Handle("/metrics", promhttp.HandlerFor(reg, promhttp.HandlerOpts{}))
+	go func() {
+		if err := http.ListenAndServe(":"+METRICS, nil); err != nil {
+			slog.Fatal(err)
+		}
+	}()
+
+	return srvMetrics
+}
 
 func registerSelf() {
 	reqBody, _ := json.Marshal(map[string]string{
@@ -46,53 +101,4 @@ func registerSelf() {
 	}
 	sb := string(body)
 	log.Printf(sb)
-}
-
-func main() {
-	h := db.Init("staff-db", "staff_svc")
-
-	lis, err := net.Listen(TYPE, HOST+":"+PORT)
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-	registerSelf()
-	s := &services.Server{H: h}
-
-	srvMetrics := grpcprom.NewServerMetrics(
-		grpcprom.WithServerHandlingTimeHistogram(
-			grpcprom.WithHistogramBuckets([]float64{0.001, 0.01, 0.1, 0.3, 0.6, 1, 3, 6, 9, 20, 30, 60, 90, 120}),
-		),
-	)
-
-	reg := prometheus.NewRegistry()
-	reg.MustRegister(srvMetrics)
-
-	grpcServer := grpc.NewServer(
-		grpc.ChainUnaryInterceptor(
-			srvMetrics.UnaryServerInterceptor(),
-		))
-	healthServer := health.NewServer()
-
-	healthServer.SetServingStatus("", grpc_health_v1.HealthCheckResponse_SERVING)
-	healthServer.SetServingStatus(staff_records.StaffRecords_ServiceDesc.ServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
-
-	grpc_health_v1.RegisterHealthServer(grpcServer, healthServer)
-	staff_records.RegisterStaffRecordsServer(grpcServer, s)
-
-	srvMetrics.InitializeMetrics(grpcServer)
-	http.Handle("/metrics", promhttp.HandlerFor(reg, promhttp.HandlerOpts{}))
-	go func() {
-		if err := http.ListenAndServe(":40000", nil); err != nil {
-			slog.Fatal(err)
-		} else {
-			slog.Info("HTTP server listening at 40000")
-		}
-	}()
-
-	reflection.Register(grpcServer)
-
-	log.Printf("services listening ar port %v", lis.Addr())
-	if err := grpcServer.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
 }
